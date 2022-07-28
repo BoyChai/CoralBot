@@ -1,8 +1,6 @@
 package main
 
-import (
-	"github.com/BoyChai/CoralBot"
-)
+import "github.com/BoyChai/CoralBot"
 
 func main() {
 	var e CoralBot.Event
@@ -12,6 +10,7 @@ func main() {
 	c1 := []CoralBot.Condition{{
 		Key:   &e.Message,
 		Value: "hello",
+		Regex: true,
 	}, {
 		Key:   &e.Message,
 		Value: "你好",

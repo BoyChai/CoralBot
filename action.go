@@ -14,6 +14,7 @@ type Task struct {
 type Condition struct {
 	Key   *string
 	Value string
+	Regex bool
 }
 
 var Tasks []Task

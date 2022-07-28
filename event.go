@@ -2,6 +2,7 @@ package CoralBot
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/tidwall/gjson"
 )
@@ -192,6 +193,13 @@ func (e *Event) explain() {
 		case "group_message":
 			e.group_message()
 			for t := 0; t < cap(task.Condition); t++ {
+				if task.Condition[t].Regex == true {
+					key, _ := regexp.MatchString(*task.Condition[t].Key, task.Condition[t].Value)
+					if key {
+						task.Run()
+					}
+					return
+				}
 				if *task.Condition[t].Key == task.Condition[t].Value {
 					task.Run()
 				}

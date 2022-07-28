@@ -29,9 +29,7 @@ $ touch example.go
 ```
 package main
 
-import (
-	"github.com/BoyChai/CoralBot"
-)
+import "github.com/BoyChai/CoralBot"
 
 func main() {
 	var e CoralBot.Event
@@ -41,6 +39,7 @@ func main() {
 	c1 := []CoralBot.Condition{{
 		Key:   &e.Message,
 		Value: "hello",
+		Regex: true,
 	}, {
 		Key:   &e.Message,
 		Value: "你好",
@@ -54,6 +53,7 @@ func main() {
 	})
 	CoralBot.RunCoralBot(":8080", &e)
 }
+
 ```
 
 您可以通过以下方式运行代码`go run example.go`，运行之后可以在群聊里面发送hello即可收到回复。效果如下
