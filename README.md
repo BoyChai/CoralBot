@@ -29,15 +29,28 @@ $ touch example.go
 ```
 package main
 
-import "github.com/BoyChai/CoralBot"
+import (
+	"github.com/BoyChai/CoralBot"
+)
 
 func main() {
+	var e CoralBot.Event
 	h := CoralBot.Handle{
 		Host: "127.0.0.1:5700",
 	}
-	e := CoralBot.Event{}
-	CoralBot.NewAction("message", "hello", func() {
-		h.SendMsg("", e.GroupID, "hello", "")
+	c1 := []CoralBot.Condition{{
+		Key:   &e.Message,
+		Value: "hello",
+	}, {
+		Key:   &e.Message,
+		Value: "你好",
+	}}
+	CoralBot.NewTask(CoralBot.Task{
+		Mode:      "all_message",
+		Condition: c1,
+		Run: func() {
+			h.SendMsg("", e.GroupID, "你好", "")
+		},
 	})
 	CoralBot.RunCoralBot(":8080", &e)
 }
@@ -45,4 +58,4 @@ func main() {
 
 您可以通过以下方式运行代码`go run example.go`，运行之后可以在群聊里面发送hello即可收到回复。效果如下
 
-![效果图](https://image.boychai.xyz/article/github-coralbot-1.png)
+![效果图](C:\Users\BoyChai\Pictures\QQ截图20220728154646.png)

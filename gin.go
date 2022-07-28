@@ -15,7 +15,12 @@ func RunCoralBot(port string, e *Event) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		e.Parse(bodyData)
+		//e.Parse(bodyData)
+		e.bodyData = string(bodyData)
+		e.explain()
 	})
-	g.Run(port)
+	err := g.Run(port)
+	if err != nil {
+		fmt.Printf("gin:%v", err)
+	}
 }
