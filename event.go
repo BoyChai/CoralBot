@@ -175,17 +175,27 @@ func (e *Event) explain() {
 		case "all_message":
 			e.all_message()
 			for t := 0; t < cap(task.Condition); t++ {
-				//fmt.Println(e.Message)
-				//fmt.Println(task.Condition[t].Key)
-				//fmt.Println(task.Condition[t].Value)
+				if task.Condition[t].Regex == true {
+					key, _ := regexp.MatchString(*task.Condition[t].Key, task.Condition[t].Value)
+					if key {
+						task.Run()
+					}
+					return
+				}
 				if *task.Condition[t].Key == task.Condition[t].Value {
-					//fmt.Println("111")
 					task.Run()
 				}
 			}
 		case "private_message":
 			e.private_message()
 			for t := 0; t < cap(task.Condition); t++ {
+				if task.Condition[t].Regex == true {
+					key, _ := regexp.MatchString(*task.Condition[t].Key, task.Condition[t].Value)
+					if key {
+						task.Run()
+					}
+					return
+				}
 				if *task.Condition[t].Key == task.Condition[t].Value {
 					task.Run()
 				}
