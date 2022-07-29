@@ -12,8 +12,8 @@ func main() {
 		Value: "hello",
 		Regex: true,
 	}, {
-		Key:   &e.Message,
-		Value: "你好",
+		Key:   &e.GroupID,
+		Value: "群号",
 	}}
 	CoralBot.NewTask(CoralBot.Task{
 		Mode:      "all_message",

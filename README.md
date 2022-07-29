@@ -41,8 +41,8 @@ func main() {
 		Value: "hello",
 		Regex: true,
 	}, {
-		Key:   &e.Message,
-		Value: "你好",
+		Key:   &e.GroupID,
+		Value: "群号",
 	}}
 	CoralBot.NewTask(CoralBot.Task{
 		Mode:      "all_message",
@@ -53,9 +53,6 @@ func main() {
 	})
 	CoralBot.RunCoralBot(":8080", &e)
 }
-
 ```
 
-您可以通过以下方式运行代码`go run example.go`，运行之后可以在群聊里面发送hello即可收到回复。效果如下
-
-![效果图](C:\Users\BoyChai\Pictures\QQ截图20220728154646.png)
+您可以通过以下方式运行代码`go run example.go`，运行之后可以在群聊里面发送hello即可收到回复。

@@ -171,47 +171,78 @@ func (e *Event) group_message() {
 func (e *Event) explain() {
 	for i := 0; i < cap(Tasks); i++ {
 		task := Tasks[i]
+		// switch判断触发器类型
 		switch task.Mode {
 		case "all_message":
 			e.all_message()
-			for t := 0; t < cap(task.Condition); t++ {
-				if task.Condition[t].Regex == true {
-					key, _ := regexp.MatchString(*task.Condition[t].Key, task.Condition[t].Value)
-					if key {
+			for t := 1; t <= cap(task.Condition); t++ {
+				if t == cap(task.Condition) {
+					if task.Condition[t-1].Regex == true {
+						key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+						if key {
+							task.Run()
+						}
+					}
+					if *task.Condition[t-1].Key == task.Condition[t-1].Value {
 						task.Run()
 					}
-					return
 				}
-				if *task.Condition[t].Key == task.Condition[t].Value {
-					task.Run()
+				if task.Condition[t-1].Regex == true {
+					key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+					if key != true {
+						break
+					}
+				}
+				if *task.Condition[t-1].Key != task.Condition[t-1].Value {
+					break
 				}
 			}
 		case "private_message":
 			e.private_message()
-			for t := 0; t < cap(task.Condition); t++ {
-				if task.Condition[t].Regex == true {
-					key, _ := regexp.MatchString(*task.Condition[t].Key, task.Condition[t].Value)
-					if key {
+			for t := 1; t <= cap(task.Condition); t++ {
+				if t == cap(task.Condition) {
+					if task.Condition[t-1].Regex == true {
+						key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+						if key {
+							task.Run()
+						}
+					}
+					if *task.Condition[t-1].Key == task.Condition[t-1].Value {
 						task.Run()
 					}
-					return
 				}
-				if *task.Condition[t].Key == task.Condition[t].Value {
-					task.Run()
+				if task.Condition[t-1].Regex == true {
+					key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+					if key != true {
+						break
+					}
+				}
+				if *task.Condition[t-1].Key != task.Condition[t-1].Value {
+					break
 				}
 			}
 		case "group_message":
 			e.group_message()
-			for t := 0; t < cap(task.Condition); t++ {
-				if task.Condition[t].Regex == true {
-					key, _ := regexp.MatchString(*task.Condition[t].Key, task.Condition[t].Value)
-					if key {
+			for t := 1; t <= cap(task.Condition); t++ {
+				if t == cap(task.Condition) {
+					if task.Condition[t-1].Regex == true {
+						key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+						if key {
+							task.Run()
+						}
+					}
+					if *task.Condition[t-1].Key == task.Condition[t-1].Value {
 						task.Run()
 					}
-					return
 				}
-				if *task.Condition[t].Key == task.Condition[t].Value {
-					task.Run()
+				if task.Condition[t-1].Regex == true {
+					key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+					if key != true {
+						break
+					}
+				}
+				if *task.Condition[t-1].Key != task.Condition[t-1].Value {
+					break
 				}
 			}
 		default:
