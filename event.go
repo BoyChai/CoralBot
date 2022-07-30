@@ -7,6 +7,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// Event 消息全部信息
 type Event struct {
 	//https://docs.go-cqhttp.org/event/#%E9%80%9A%E7%94%A8%E6%95%B0%E6%8D%AE
 	bodyData    string
@@ -31,7 +32,12 @@ type Event struct {
 	TargetId    string
 	Comment     string
 	Flag        string
+	RealId      string
+	Messages    []ForwardMessage
+	Image       image
 }
+
+// Sender 账号信息
 type Sender struct {
 	UserID   string
 	Nickname string
@@ -43,16 +49,34 @@ type Sender struct {
 	Role     string
 	Title    string
 }
+
+// Anonymous 匿名信息
 type Anonymous struct {
 	ID   string
 	Name string
 	Flag string
 }
+
+// File 文件信息
 type File struct {
 	ID    string
 	Name  string
 	Size  string
 	BusId string
+}
+
+// ForwardMessage 合并转发内容
+type ForwardMessage struct {
+	Content string
+	Sender  Sender
+	Time    string
+}
+
+// 图片信息
+type image struct {
+	Size     string
+	Filename string
+	Url      string
 }
 
 //func (e *Event) Parse(boyData []byte) {
@@ -175,78 +199,39 @@ func (e *Event) explain() {
 		switch task.Mode {
 		case "all_message":
 			e.all_message()
-			for t := 1; t <= cap(task.Condition); t++ {
-				if t == cap(task.Condition) {
-					if task.Condition[t-1].Regex == true {
-						key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
-						if key {
-							task.Run()
-						}
-					}
-					if *task.Condition[t-1].Key == task.Condition[t-1].Value {
-						task.Run()
-					}
-				}
-				if task.Condition[t-1].Regex == true {
-					key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
-					if key != true {
-						break
-					}
-				}
-				if *task.Condition[t-1].Key != task.Condition[t-1].Value {
-					break
-				}
-			}
+			e.filterStart(task)
 		case "private_message":
 			e.private_message()
-			for t := 1; t <= cap(task.Condition); t++ {
-				if t == cap(task.Condition) {
-					if task.Condition[t-1].Regex == true {
-						key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
-						if key {
-							task.Run()
-						}
-					}
-					if *task.Condition[t-1].Key == task.Condition[t-1].Value {
-						task.Run()
-					}
-				}
-				if task.Condition[t-1].Regex == true {
-					key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
-					if key != true {
-						break
-					}
-				}
-				if *task.Condition[t-1].Key != task.Condition[t-1].Value {
-					break
-				}
-			}
+			e.filterStart(task)
 		case "group_message":
 			e.group_message()
-			for t := 1; t <= cap(task.Condition); t++ {
-				if t == cap(task.Condition) {
-					if task.Condition[t-1].Regex == true {
-						key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
-						if key {
-							task.Run()
-						}
-					}
-					if *task.Condition[t-1].Key == task.Condition[t-1].Value {
-						task.Run()
-					}
-				}
-				if task.Condition[t-1].Regex == true {
-					key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
-					if key != true {
-						break
-					}
-				}
-				if *task.Condition[t-1].Key != task.Condition[t-1].Value {
-					break
-				}
-			}
+			e.filterStart(task)
 		default:
 			fmt.Printf("%v事件解析失败", task.Mode)
+		}
+	}
+}
+func (e *Event) filterStart(task Task) {
+	for t := 1; t <= cap(task.Condition); t++ {
+		if t == cap(task.Condition) {
+			if task.Condition[t-1].Regex == true {
+				key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+				if key {
+					task.Run()
+				}
+			}
+			if *task.Condition[t-1].Key == task.Condition[t-1].Value {
+				task.Run()
+			}
+		}
+		if task.Condition[t-1].Regex == true {
+			key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+			if key != true {
+				break
+			}
+		}
+		if *task.Condition[t-1].Key != task.Condition[t-1].Value {
+			break
 		}
 	}
 }
