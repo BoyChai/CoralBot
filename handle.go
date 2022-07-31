@@ -2,6 +2,7 @@ package CoralBot
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -14,13 +15,22 @@ type Handle struct {
 	Host string
 }
 
-// 输出错误信息
-func (h Handle) error(htype string, err error) {
-	fmt.Printf("error:%v:%v\n", htype, err)
+func (h Handle) noData(body io.ReadCloser) string {
+	data, err := ioutil.ReadAll(body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	status := gjson.Get(string(data), "status").String()
+	if status != "ok" {
+		fmt.Println("执行失败")
+
+	}
+	return string(data)
 }
 
 // SendPrivateMsg 发送私聊消息
-func (h Handle) SendPrivateMsg(userId string, groupId string, message string, autoEscape string) {
+func (h Handle) SendPrivateMsg(userId string, groupId string, message string, autoEscape string) Event {
+	var e Event
 	fromData := make(url.Values)
 	fromData.Add("user_id", userId)
 	fromData.Add("group_id", groupId)
@@ -30,24 +40,18 @@ func (h Handle) SendPrivateMsg(userId string, groupId string, message string, au
 	addr := fmt.Sprintf("http://" + h.Host + "/send_private_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
 	if err != nil {
-		h.error("私聊消息", err)
-		return
+		fmt.Println(err)
+		return e
 	}
-	body, err := ioutil.ReadAll(request.Body)
+	bodyData := h.noData(request.Body)
 	defer request.Body.Close()
-	if err != nil {
-		h.error("私聊消息", err)
-		return
-	}
-	status := gjson.Get(string(body), "status").String()
-	if status != "ok" {
-		fmt.Println("发送失败")
-	}
-
+	e.MessageId = gjson.Get(bodyData, "data.message_id").String()
+	return e
 }
 
 // SendGroupMsg 发送群聊消息
-func (h Handle) SendGroupMsg(groupId string, message string, autoEscape string) {
+func (h Handle) SendGroupMsg(groupId string, message string, autoEscape string) Event {
+	var e Event
 	fromData := make(url.Values)
 	fromData.Add("group_id", groupId)
 	fromData.Add("message", message)
@@ -56,47 +60,35 @@ func (h Handle) SendGroupMsg(groupId string, message string, autoEscape string) 
 	addr := fmt.Sprintf("http://" + h.Host + "/send_group_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
 	if err != nil {
-		h.error("群聊消息", err)
-		return
+		fmt.Println(err)
+		return e
 	}
-	body, err := ioutil.ReadAll(request.Body)
+	bodyData := h.noData(request.Body)
 	defer request.Body.Close()
-	if err != nil {
-		h.error("群聊消息", err)
-		return
-	}
-	status := gjson.Get(string(body), "status").String()
-	if status != "ok" {
-		fmt.Println("发送失败")
-	}
+	e.MessageId = gjson.Get(bodyData, "data.message_id").String()
+	return e
 }
 
 // SendGroupForwardMsg 发送合并转发 ( 群 )
-func (h Handle) SendGroupForwardMsg(groupId string, message string) {
-	fromData := make(url.Values)
-	fromData.Add("group_id", groupId)
-	fromData.Add("message", message)
-	data := strings.NewReader(fromData.Encode())
-	addr := fmt.Sprintf("http://" + h.Host + "/send_group_forward_msg")
-	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
-	if err != nil {
-		h.error("合并转发", err)
-		return
-	}
-	body, err := ioutil.ReadAll(request.Body)
-	defer request.Body.Close()
-	if err != nil {
-		h.error("合并转发", err)
-		return
-	}
-	status := gjson.Get(string(body), "status").String()
-	if status != "ok" {
-		fmt.Println("发送失败")
-	}
-}
+//func (h Handle) SendGroupForwardMsg(groupId string, message string) {
+//	var e Event
+//	fromData := make(url.Values)
+//	fromData.Add("group_id", groupId)
+//	fromData.Add("message", message)
+//	data := strings.NewReader(fromData.Encode())
+//	addr := fmt.Sprintf("http://" + h.Host + "/send_group_forward_msg")
+//	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+//	if err != nil {
+//		fmt.Println(err)
+//		return e
+//	}
+//	h.noData(request.Body)
+//	defer request.Body.Close()
+//}
 
 // SendMsg 发送消息
-func (h Handle) SendMsg(userId string, groupId string, message string, autoEscape string) {
+func (h Handle) SendMsg(userId string, groupId string, message string, autoEscape string) Event {
+	var e Event
 	fromData := make(url.Values)
 	fromData.Add("user_id", userId)
 	fromData.Add("group_id", groupId)
@@ -106,19 +98,13 @@ func (h Handle) SendMsg(userId string, groupId string, message string, autoEscap
 	addr := fmt.Sprintf("http://" + h.Host + "/send_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
 	if err != nil {
-		h.error("消息", err)
-		return
+		fmt.Println(err)
+		return e
 	}
-	body, err := ioutil.ReadAll(request.Body)
+	bodyData := h.noData(request.Body)
 	defer request.Body.Close()
-	if err != nil {
-		h.error("消息", err)
-		return
-	}
-	status := gjson.Get(string(body), "status").String()
-	if status != "ok" {
-		fmt.Println("发送失败")
-	}
+	e.MessageId = gjson.Get(bodyData, "data.message_id").String()
+	return e
 }
 
 // DeleteMsg 撤回消息
@@ -129,19 +115,11 @@ func (h Handle) DeleteMsg(messageId int32) {
 	addr := fmt.Sprintf("http://" + h.Host + "/delete_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
 	if err != nil {
-		h.error("合并转发", err)
+		fmt.Println(err)
 		return
 	}
-	body, err := ioutil.ReadAll(request.Body)
+	h.noData(request.Body)
 	defer request.Body.Close()
-	if err != nil {
-		h.error("合并转发", err)
-		return
-	}
-	status := gjson.Get(string(body), "status").String()
-	if status != "ok" {
-		fmt.Println("发送失败")
-	}
 	//该 API 无响应数据
 }
 
@@ -154,16 +132,12 @@ func (h Handle) GetMsg(messageId int32) Event {
 	addr := fmt.Sprintf("http://" + h.Host + "/get_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
 	if err != nil {
-		h.error("GetMsg", err)
+		fmt.Println(err)
 		return e
 	}
-	body, err := ioutil.ReadAll(request.Body)
+	bodyData := h.noData(request.Body)
 	defer request.Body.Close()
-	if err != nil {
-		h.error("GetMsg", err)
-		return e
-	}
-	e.bodyData = string(body)
+	e.bodyData = bodyData
 	e.MessageId = gjson.Get(e.bodyData, "data.message_id").String()
 	e.RealId = gjson.Get(e.bodyData, "data.real_id").String()
 	e.Sender.UserID = gjson.Get(e.bodyData, "data.sender.user_id").String()
@@ -190,21 +164,12 @@ func (h Handle) GetForwardMsg(messageId int32) Event {
 	addr := fmt.Sprintf("http://" + h.Host + "/get_forward_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
 	if err != nil {
-		h.error("GetForwardMsg", err)
+		fmt.Println(err)
 		return e
 	}
-	body, err := ioutil.ReadAll(request.Body)
+	bodyData := h.noData(request.Body)
 	defer request.Body.Close()
-	if err != nil {
-		h.error("GetForwardMsg", err)
-		return e
-	}
-	status := gjson.Get(string(body), "status").String()
-	if status != "ok" {
-		fmt.Println("发送失败")
-		return e
-	}
-	e.bodyData = string(body)
+	e.bodyData = bodyData
 	for i := 0; i < int(gjson.Get(e.bodyData, "data.messages.#").Int()); i++ {
 		var messages ForwardMessage
 		messages.Content = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+string(i)+".content")).String()
@@ -225,16 +190,12 @@ func (h Handle) GetImage(file string) Event {
 	addr := fmt.Sprintf("http://" + h.Host + "/get_image")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
 	if err != nil {
-		h.error("get_image", err)
+		fmt.Println(err)
 		return e
 	}
-	body, err := ioutil.ReadAll(request.Body)
+	bodyData := h.noData(request.Body)
 	defer request.Body.Close()
-	if err != nil {
-		h.error("get_image", err)
-		return e
-	}
-	e.bodyData = string(body)
+	e.bodyData = bodyData
 	e.Image.Size = gjson.Get(e.bodyData, "data.size").String()
 	e.Image.Filename = gjson.Get(e.bodyData, "data.filename").String()
 	e.Image.Url = gjson.Get(e.bodyData, "data.url").String()
@@ -247,7 +208,12 @@ func (h Handle) MarkMsgAsRead(messageId int32) {
 	fromData.Add("message_id", string(messageId))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/mark_msg_as_read")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -259,7 +225,12 @@ func (h Handle) SetGroupKick(groupId int64, userId int64, rejectAddRequest bool)
 	fromData.Add("reject_add_request", fmt.Sprintf("%t", rejectAddRequest))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_kick")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -271,7 +242,12 @@ func (h Handle) SetGroupBan(groupId int64, userId int64, duration string) {
 	fromData.Add("duration", duration)
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_ban")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -283,7 +259,12 @@ func (h Handle) SetGroupAnonymousBan(groupId int64, flag string, duration string
 	fromData.Add("duration", duration)
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_anonymous_ban")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -294,7 +275,12 @@ func (h Handle) SetGroupWholeBan(groupId int64, enable bool) {
 	fromData.Add("enable", fmt.Sprintf("%t", enable))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_whole_ban")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -306,7 +292,12 @@ func (h Handle) SetGroupAdmin(groupId int64, userId int64, enable bool) {
 	fromData.Add("enable", fmt.Sprintf("%t", enable))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_admin")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -317,7 +308,12 @@ func (h Handle) SetGroupAnonymous(groupId int64, enable bool) {
 	fromData.Add("enable", fmt.Sprintf("%t", enable))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_anonymous")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -328,7 +324,12 @@ func (h Handle) SetGroupName(groupId int64, groupName string) {
 	fromData.Add("group_name", groupName)
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_name")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -339,7 +340,12 @@ func (h Handle) SetGroupLeave(groupId int64, isDismiss bool) {
 	fromData.Add("is_dismiss", fmt.Sprintf("%t", isDismiss))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_leave")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -352,7 +358,12 @@ func (h Handle) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle s
 	fromData.Add("duration", duration)
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_special_title")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -362,7 +373,12 @@ func (h Handle) SendGroupSign(groupId int64) {
 	fromData.Add("group_id", string(groupId))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/send_group_sign")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -374,7 +390,12 @@ func (h Handle) SetFriendAddRequest(flag string, approve bool, remark string) {
 	fromData.Add("remark", remark)
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_friend_add_request")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -387,7 +408,12 @@ func (h Handle) SetGroupAddRequest(flag string, subType string, approve bool, re
 	fromData.Add("reason", reason)
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_add_request")
-	http.Post(addr, "application/x-www-form-urlencoded", data)
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer request.Body.Close()
 	//该 API 无响应数据
 }
 
@@ -396,16 +422,13 @@ func (h Handle) GetLoginInfo() Event {
 	var e Event
 	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/get_login_info"))
 	if err != nil {
-		h.error("获取登录号信息", err)
+		fmt.Println(err)
 		return e
+	}
+	bodyData := h.noData(request.Body)
+	defer request.Body.Close()
 
-	}
-	bodyData, err := ioutil.ReadAll(request.Body)
-	if err != nil {
-		h.error("获取登录号信息", err)
-		return e
-	}
-	e.bodyData = string(bodyData)
+	e.bodyData = bodyData
 	e.Sender.UserID = gjson.Get(e.bodyData, "data.user_id").String()
 	e.Sender.Nickname = gjson.Get(e.bodyData, "nickname").String()
 	return e
