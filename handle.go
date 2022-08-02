@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -44,7 +45,12 @@ func (h Handle) SendPrivateMsg(userId string, groupId string, message string, au
 		return e
 	}
 	bodyData := h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	e.MessageId = gjson.Get(bodyData, "data.message_id").String()
 	return e
 }
@@ -64,7 +70,12 @@ func (h Handle) SendGroupMsg(groupId string, message string, autoEscape string) 
 		return e
 	}
 	bodyData := h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	e.MessageId = gjson.Get(bodyData, "data.message_id").String()
 	return e
 }
@@ -102,7 +113,12 @@ func (h Handle) SendMsg(userId string, groupId string, message string, autoEscap
 		return e
 	}
 	bodyData := h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	e.MessageId = gjson.Get(bodyData, "data.message_id").String()
 	return e
 }
@@ -119,7 +135,12 @@ func (h Handle) DeleteMsg(messageId int32) {
 		return
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
@@ -136,7 +157,12 @@ func (h Handle) GetMsg(messageId int32) Event {
 		return e
 	}
 	bodyData := h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	e.bodyData = bodyData
 	e.MessageId = gjson.Get(e.bodyData, "data.message_id").String()
 	e.RealId = gjson.Get(e.bodyData, "data.real_id").String()
@@ -168,14 +194,19 @@ func (h Handle) GetForwardMsg(messageId int32) Event {
 		return e
 	}
 	bodyData := h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	e.bodyData = bodyData
 	for i := 0; i < int(gjson.Get(e.bodyData, "data.messages.#").Int()); i++ {
 		var messages ForwardMessage
-		messages.Content = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+string(i)+".content")).String()
-		messages.Sender.Nickname = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+string(i)+".sender.nickname")).String()
-		messages.Sender.UserID = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+string(i)+".sender.user_id")).String()
-		messages.Time = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+string(i)+".time")).String()
+		messages.Content = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+strconv.Itoa(i)+".content")).String()
+		messages.Sender.Nickname = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+strconv.Itoa(i)+".sender.nickname")).String()
+		messages.Sender.UserID = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+strconv.Itoa(i)+".sender.user_id")).String()
+		messages.Time = gjson.Get(e.bodyData, fmt.Sprintf("data.messages."+strconv.Itoa(i)+".time")).String()
 		e.Messages = append(e.Messages, messages)
 	}
 	return e
@@ -194,7 +225,12 @@ func (h Handle) GetImage(file string) Event {
 		return e
 	}
 	bodyData := h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	e.bodyData = bodyData
 	e.Image.Size = gjson.Get(e.bodyData, "data.size").String()
 	e.Image.Filename = gjson.Get(e.bodyData, "data.filename").String()
@@ -213,15 +249,20 @@ func (h Handle) MarkMsgAsRead(messageId int32) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupKick 群组踢人
 func (h Handle) SetGroupKick(groupId int64, userId int64, rejectAddRequest bool) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
-	fromData.Add("user_id", string(userId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("user_id", strconv.FormatInt(userId, 10))
 	fromData.Add("reject_add_request", fmt.Sprintf("%t", rejectAddRequest))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_kick")
@@ -230,15 +271,20 @@ func (h Handle) SetGroupKick(groupId int64, userId int64, rejectAddRequest bool)
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupBan 群组单人禁言
 func (h Handle) SetGroupBan(groupId int64, userId int64, duration string) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
-	fromData.Add("user_id", string(userId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("user_id", strconv.FormatInt(userId, 10))
 	fromData.Add("duration", duration)
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_ban")
@@ -247,14 +293,19 @@ func (h Handle) SetGroupBan(groupId int64, userId int64, duration string) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupAnonymousBan 群组匿名用户禁言
 func (h Handle) SetGroupAnonymousBan(groupId int64, flag string, duration string) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
 	fromData.Add("flag", flag)
 	fromData.Add("duration", duration)
 	data := strings.NewReader(fromData.Encode())
@@ -264,14 +315,19 @@ func (h Handle) SetGroupAnonymousBan(groupId int64, flag string, duration string
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupWholeBan 群组全员禁言
 func (h Handle) SetGroupWholeBan(groupId int64, enable bool) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
 	fromData.Add("enable", fmt.Sprintf("%t", enable))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_whole_ban")
@@ -280,15 +336,20 @@ func (h Handle) SetGroupWholeBan(groupId int64, enable bool) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupAdmin 群组设置管理员
 func (h Handle) SetGroupAdmin(groupId int64, userId int64, enable bool) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
-	fromData.Add("userId", string(userId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("userId", strconv.FormatInt(userId, 10))
 	fromData.Add("enable", fmt.Sprintf("%t", enable))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_admin")
@@ -297,14 +358,19 @@ func (h Handle) SetGroupAdmin(groupId int64, userId int64, enable bool) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupAnonymous 群组匿名
 func (h Handle) SetGroupAnonymous(groupId int64, enable bool) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
 	fromData.Add("enable", fmt.Sprintf("%t", enable))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_anonymous")
@@ -313,14 +379,19 @@ func (h Handle) SetGroupAnonymous(groupId int64, enable bool) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupName 修改群聊名称
 func (h Handle) SetGroupName(groupId int64, groupName string) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
 	fromData.Add("group_name", groupName)
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_name")
@@ -329,14 +400,19 @@ func (h Handle) SetGroupName(groupId int64, groupName string) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupLeave 退出群聊
 func (h Handle) SetGroupLeave(groupId int64, isDismiss bool) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
 	fromData.Add("is_dismiss", fmt.Sprintf("%t", isDismiss))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/set_group_leave")
@@ -345,15 +421,20 @@ func (h Handle) SetGroupLeave(groupId int64, isDismiss bool) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SetGroupSpecialTitle 设置群组专属头衔
 func (h Handle) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle string, duration string) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
-	fromData.Add("user_id", string(userId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("user_id", strconv.FormatInt(userId, 10))
 	fromData.Add("special_title", specialTitle)
 	fromData.Add("duration", duration)
 	data := strings.NewReader(fromData.Encode())
@@ -363,14 +444,19 @@ func (h Handle) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle s
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
 // SendGroupSign 群打卡
 func (h Handle) SendGroupSign(groupId int64) {
 	fromData := make(url.Values)
-	fromData.Add("group_id", string(groupId))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
 	data := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf("http://" + h.Host + "/send_group_sign")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
@@ -378,7 +464,12 @@ func (h Handle) SendGroupSign(groupId int64) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
@@ -395,7 +486,12 @@ func (h Handle) SetFriendAddRequest(flag string, approve bool, remark string) {
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
@@ -413,7 +509,12 @@ func (h Handle) SetGroupAddRequest(flag string, subType string, approve bool, re
 		fmt.Println(err)
 	}
 	h.noData(request.Body)
-	defer request.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	//该 API 无响应数据
 }
 
@@ -426,8 +527,12 @@ func (h Handle) GetLoginInfo() Event {
 		return e
 	}
 	bodyData := h.noData(request.Body)
-	defer request.Body.Close()
-
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
 	e.bodyData = bodyData
 	e.Sender.UserID = gjson.Get(e.bodyData, "data.user_id").String()
 	e.Sender.Nickname = gjson.Get(e.bodyData, "nickname").String()
