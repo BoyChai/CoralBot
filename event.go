@@ -34,20 +34,25 @@ type Event struct {
 	Flag        string
 	RealId      string
 	Messages    []ForwardMessage
-	Image       image
+	Image       Image
+	QiDian      QiDian
 }
 
 // Sender 账号信息
 type Sender struct {
-	UserID   string
-	Nickname string
-	Sex      string
-	Age      string
-	Card     string
-	Area     string
-	Level    string
-	Role     string
-	Title    string
+	UserID    string
+	Nickname  string
+	Sex       string
+	Age       string
+	QID       string
+	Card      string
+	Area      string
+	Level     string
+	Role      string
+	Title     string
+	LoginDays string
+	Remark    string
+	Source    string
 }
 
 // Anonymous 匿名信息
@@ -72,48 +77,41 @@ type ForwardMessage struct {
 	Time    string
 }
 
-// 图片信息
-type image struct {
+// Image 图片信息
+type Image struct {
 	Size     string
 	Filename string
 	Url      string
 }
 
-//func (e *Event) Parse(boyData []byte) {
-//e.Time = gjson.Get(string(boyData), "time").String()
-//e.SelfID = gjson.Get(string(boyData), "self_id").String()
-//e.PostType = gjson.Get(string(boyData), "post_type").String()
-//e.SubType = gjson.Get(string(boyData), "sub_type").String()
-//e.MessageId = gjson.Get(string(boyData), "message_id").String()
-//e.UserID = gjson.Get(string(boyData), "user_id").String()
-//e.GroupID = gjson.Get(string(boyData), "group_id").String()
-//e.Message = gjson.Get(string(boyData), "message").String()
-//e.RawMessage = gjson.Get(string(boyData), "raw_message").String()
-//e.Font = gjson.Get(string(boyData), "font").String()
-//e.Sender.UserID = gjson.Get(string(boyData), "sender.user_id").String()
-//e.Sender.Nickname = gjson.Get(string(boyData), "sender.nickname").String()
-//e.Sender.Sex = gjson.Get(string(boyData), "sender.sex").String()
-//e.Sender.Age = gjson.Get(string(boyData), "sender.age").String()
-//e.Sender.Card = gjson.Get(string(boyData), "sender.card").String()
-//e.Sender.Area = gjson.Get(string(boyData), "sender.area").String()
-//e.Sender.Level = gjson.Get(string(boyData), "sender.level").String()
-//e.Sender.Role = gjson.Get(string(boyData), "sender.role").String()
-//e.Sender.Title = gjson.Get(string(boyData), "sender.title").String()
-//e.TempSource = gjson.Get(string(boyData), "temp_source").String()
-//e.Anonymous.ID = gjson.Get(string(boyData), "anonymous.id").String()
-//e.Anonymous.Name = gjson.Get(string(boyData), "anonymous.name").String()
-//e.Anonymous.Flag = gjson.Get(string(boyData), "anonymous.flag").String()
-//e.NoticeType = gjson.Get(string(boyData), "notice_type").String()
-//e.File.ID = gjson.Get(string(boyData), "file.id").String()
-//e.File.Name = gjson.Get(string(boyData), "file.name").String()
-//e.File.Size = gjson.Get(string(boyData), "file.size").String()
-//e.File.BusId = gjson.Get(string(boyData), "file.busid").String()
-//e.OperatorId = gjson.Get(string(boyData), "operator_id").String()
-//e.Duration = gjson.Get(string(boyData), "duration").String()
-//e.TargetId = gjson.Get(string(boyData), "target_id").String()
-//e.Comment = gjson.Get(string(boyData), "comment").String()
-//e.Flag = gjson.Get(string(boyData), "flag").String()
-//}
+// QiDian 企点资料
+type QiDian struct {
+	MasterId   string
+	ExtName    string
+	CreateTime string
+}
+
+// Profile 账号资料
+// 此结构体主要用来api传参
+type Profile struct {
+	Nickname     string
+	Company      string
+	Email        string
+	College      string
+	PersonalNote string
+}
+
+// GroupInfo 群聊详细信息
+// 此结构体主要用来返回值
+type GroupInfo struct {
+	GroupId         string
+	GroupName       string
+	GroupMemo       string
+	GroupCreateTime string
+	GroupLevel      string
+	MemberCount     string
+	MaxMemberCount  string
+}
 
 func (e *Event) all_message() {
 	e.Time = gjson.Get(e.bodyData, "time").String()

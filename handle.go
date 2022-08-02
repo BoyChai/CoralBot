@@ -538,3 +538,204 @@ func (h Handle) GetLoginInfo() Event {
 	e.Sender.Nickname = gjson.Get(e.bodyData, "nickname").String()
 	return e
 }
+
+// QiDianGetAccountInfo 获取企点账号信息
+// 该API只有企点协议可用
+func (h Handle) QiDianGetAccountInfo() Event {
+	var e Event
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/qidian_get_account_info"))
+	if err != nil {
+		fmt.Println(err)
+		return e
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	e.bodyData = bodyData
+	e.QiDian.MasterId = gjson.Get(e.bodyData, "master_id").String()
+	e.QiDian.ExtName = gjson.Get(e.bodyData, "ext_name").String()
+	e.QiDian.CreateTime = gjson.Get(e.bodyData, "create_time").String()
+	return e
+}
+
+// SetQQProfile 设置登录号资料
+func (h Handle) SetQQProfile(p Profile) {
+	fromData := make(url.Values)
+	fromData.Add("nickname", p.Nickname)
+	fromData.Add("company", p.Company)
+	fromData.Add("email", p.Email)
+	fromData.Add("college", p.College)
+	fromData.Add("personal_note", p.PersonalNote)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/set_qq_profile")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+}
+
+// GetStrangerInfo 获取陌生人信息
+func (h Handle) GetStrangerInfo(userId int64, noCache bool) Event {
+	var e Event
+	fromData := make(url.Values)
+	fromData.Add("user_id", strconv.FormatInt(userId, 10))
+	fromData.Add("no_cache", fmt.Sprintf("%t", noCache))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_stranger_info")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	e.bodyData = bodyData
+	e.Sender.UserID = gjson.Get(e.bodyData, "data.user_id").String()
+	e.Sender.Nickname = gjson.Get(e.bodyData, "data.nickname").String()
+	e.Sender.Sex = gjson.Get(e.bodyData, "data.sex").String()
+	e.Sender.Age = gjson.Get(e.bodyData, "data.age").String()
+	e.Sender.QID = gjson.Get(e.bodyData, "data.qid").String()
+	e.Sender.Level = gjson.Get(e.bodyData, "data.level").String()
+	e.Sender.LoginDays = gjson.Get(e.bodyData, "data.login_days").String()
+	return e
+}
+
+// GetFriendList 获取好友列表
+func (h Handle) GetFriendList() []Sender {
+	var s []Sender
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/get_friend_list"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	for i := 0; i < int(gjson.Get(bodyData, "data.#").Int()); i++ {
+		var sender Sender
+		sender.UserID = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".user_id").String()
+		sender.Nickname = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".nickname").String()
+		sender.Remark = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".remark").String()
+		s = append(s, sender)
+	}
+	return s
+}
+
+// GetUnidirectionalFriendList 获取单向好友列表
+func (h Handle) GetUnidirectionalFriendList() []Sender {
+	var s []Sender
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/get_unidirectional_friend_list"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	for i := 0; i < int(gjson.Get(bodyData, "data.#").Int()); i++ {
+		var sender Sender
+		sender.UserID = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".user_id").String()
+		sender.Nickname = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".nickname").String()
+		sender.Source = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".source").String()
+		s = append(s, sender)
+	}
+	return s
+}
+
+// DeleteFriend 删除好友
+func (h Handle) DeleteFriend(friendId int64) {
+	fromData := make(url.Values)
+	fromData.Add("friend_id", strconv.FormatInt(friendId, 10))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/delete_friend")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	//该 API 无响应数据
+}
+
+// GetGroupInfo 获取群信息
+func (h Handle) GetGroupInfo(groupId int64, noCache bool) GroupInfo {
+	var g GroupInfo
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("no_cache", fmt.Sprintf("%t", noCache))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_info")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	g.GroupId = gjson.Get(bodyData, "data.group_id").String()
+	g.GroupName = gjson.Get(bodyData, "data.group_name").String()
+	g.GroupMemo = gjson.Get(bodyData, "data.group_memo").String()
+	g.GroupCreateTime = gjson.Get(bodyData, "data.group_create_time").String()
+	g.GroupLevel = gjson.Get(bodyData, "data.group_level").String()
+	g.MemberCount = gjson.Get(bodyData, "data.member_count").String()
+	g.MaxMemberCount = gjson.Get(bodyData, "data.max_member_count").String()
+	return g
+}
+
+// GetGroupList 获取群列表
+func (h Handle) GetGroupList() []GroupInfo {
+	var groupList []GroupInfo
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/get_unidirectional_friend_list"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	for i := 0; i < int(gjson.Get(bodyData, "data.#").Int()); i++ {
+		var g GroupInfo
+		g.GroupId = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".group_id").String()
+		g.GroupName = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".group_name").String()
+		g.GroupMemo = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".group_memo").String()
+		g.GroupCreateTime = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".group_create_time").String()
+		g.GroupLevel = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".group_level").String()
+		g.MemberCount = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".member_count").String()
+		g.MaxMemberCount = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".max_member_count").String()
+		groupList = append(groupList, g)
+	}
+	return groupList
+}
