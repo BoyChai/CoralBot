@@ -40,19 +40,26 @@ type Event struct {
 
 // Sender 账号信息
 type Sender struct {
-	UserID    string
-	Nickname  string
-	Sex       string
-	Age       string
-	QID       string
-	Card      string
-	Area      string
-	Level     string
-	Role      string
-	Title     string
-	LoginDays string
-	Remark    string
-	Source    string
+	GroupID         string
+	UserID          string
+	Nickname        string
+	Sex             string
+	Age             string
+	QID             string
+	Card            string
+	Area            string
+	Level           string
+	Role            string
+	Title           string
+	LoginDays       string
+	Remark          string
+	Source          string
+	JoinTime        string
+	LastSentTime    string
+	Unfriendly      string
+	TitleExpireTime string
+	CardChangeable  string
+	ShutUpTimestamp string
 }
 
 // Anonymous 匿名信息
@@ -111,6 +118,28 @@ type GroupInfo struct {
 	GroupLevel      string
 	MemberCount     string
 	MaxMemberCount  string
+}
+
+// GroupHonor 群荣誉信息
+// 此结构体主要用来返回值
+type GroupHonor struct {
+	GroupId          string
+	CurrentTalkative Honor
+	TalkativeList    []Honor
+	PerformerList    []Honor
+	LegendList       []Honor
+	StrongNewbieList []Honor
+	EmotionList      []Honor
+}
+
+// Honor 荣誉的具体信息
+// 此结构体主要用来返回值
+type Honor struct {
+	UserId      string
+	Nickname    string
+	Avatar      string
+	DayCount    string
+	Description string
 }
 
 func (e *Event) all_message() {

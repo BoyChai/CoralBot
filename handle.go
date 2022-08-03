@@ -739,3 +739,220 @@ func (h Handle) GetGroupList() []GroupInfo {
 	}
 	return groupList
 }
+
+// GetGroupMemberInfo 获取群成员信息
+func (h Handle) GetGroupMemberInfo(groupId int64, userId int64, noCache bool) Sender {
+	var s Sender
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("user_id", strconv.FormatInt(userId, 10))
+	fromData.Add("no_cache", fmt.Sprintf("%t", noCache))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_member_info")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return s
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+
+	s.GroupID = gjson.Get(bodyData, "data.group_id").String()
+	s.UserID = gjson.Get(bodyData, "data.user_id").String()
+	s.Nickname = gjson.Get(bodyData, "data.nickname").String()
+	s.Card = gjson.Get(bodyData, "data.card").String()
+	s.Sex = gjson.Get(bodyData, "data.sex").String()
+	s.Age = gjson.Get(bodyData, "data.age").String()
+	s.Area = gjson.Get(bodyData, "data.area").String()
+	s.JoinTime = gjson.Get(bodyData, "data.join_time").String()
+	s.LastSentTime = gjson.Get(bodyData, "data.last_sent_time").String()
+	s.Level = gjson.Get(bodyData, "data.level").String()
+	s.Role = gjson.Get(bodyData, "data.role").String()
+	s.Unfriendly = gjson.Get(bodyData, "data.unfriendly").String()
+	s.Title = gjson.Get(bodyData, "data.title").String()
+	s.TitleExpireTime = gjson.Get(bodyData, "data.title_expire_time").String()
+	s.CardChangeable = gjson.Get(bodyData, "data.card_changeable").String()
+	s.ShutUpTimestamp = gjson.Get(bodyData, "data.shut_up_timestamp").String()
+	return s
+}
+
+// GetGroupMemberList 获取群成员列表
+func (h Handle) GetGroupMemberList(groupId int64) []Sender {
+	var sender []Sender
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_member_list")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return sender
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	for i := 0; i < int(gjson.Get(bodyData, "data.#").Int()); i++ {
+		var s Sender
+		s.GroupID = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".group_id").String()
+		s.UserID = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".user_id").String()
+		s.Nickname = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".nickname").String()
+		s.Card = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".card").String()
+		s.Sex = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".sex").String()
+		s.Age = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".age").String()
+		s.Area = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".area").String()
+		s.JoinTime = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".join_time").String()
+		s.LastSentTime = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".last_sent_time").String()
+		s.Level = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".level").String()
+		s.Role = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".role").String()
+		s.Unfriendly = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".unfriendly").String()
+		s.Title = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".title").String()
+		s.TitleExpireTime = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".title_expire_time").String()
+		s.CardChangeable = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".card_changeable").String()
+		s.ShutUpTimestamp = gjson.Get(bodyData, "data."+strconv.Itoa(i)+".shut_up_timestamp").String()
+		sender = append(sender, s)
+	}
+	return sender
+}
+
+// GetGroupHonorInfo 获取群荣誉信息
+func (h Handle) GetGroupHonorInfo(groupId int64, typ string) GroupHonor {
+	var gh GroupHonor
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("type", typ)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_honor_info")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return gh
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	gh.CurrentTalkative.UserId = gjson.Get(bodyData, "data.current_talkative.user_id").String()
+	gh.CurrentTalkative.Nickname = gjson.Get(bodyData, "data.current_talkative.nickname").String()
+	gh.CurrentTalkative.Avatar = gjson.Get(bodyData, "data.current_talkative.avatar").String()
+	gh.CurrentTalkative.DayCount = gjson.Get(bodyData, "data.current_talkative.day_count").String()
+	for i := 0; i < int(gjson.Get(bodyData, "data.legend_list.#").Int()); i++ {
+		var ho Honor
+		ho.UserId = gjson.Get(bodyData, "data.legend_list."+strconv.Itoa(i)+"user_id").String()
+		ho.Nickname = gjson.Get(bodyData, "data.legend_list."+strconv.Itoa(i)+"nickname").String()
+		ho.Avatar = gjson.Get(bodyData, "data.legend_list."+strconv.Itoa(i)+"avatar").String()
+		ho.Description = gjson.Get(bodyData, "data.legend_list."+strconv.Itoa(i)+"description").String()
+		gh.LegendList = append(gh.LegendList, ho)
+	}
+	for i := 0; i < int(gjson.Get(bodyData, "data.performer_list.#").Int()); i++ {
+		var ho Honor
+		ho.UserId = gjson.Get(bodyData, "data.performer_list."+strconv.Itoa(i)+"user_id").String()
+		ho.Nickname = gjson.Get(bodyData, "data.performer_list."+strconv.Itoa(i)+"nickname").String()
+		ho.Avatar = gjson.Get(bodyData, "data.performer_list."+strconv.Itoa(i)+"avatar").String()
+		ho.Description = gjson.Get(bodyData, "data.performer_list."+strconv.Itoa(i)+"description").String()
+		gh.PerformerList = append(gh.PerformerList, ho)
+	}
+	for i := 0; i < int(gjson.Get(bodyData, "data.legend_list.#").Int()); i++ {
+		var ho Honor
+		ho.UserId = gjson.Get(bodyData, "data.legend_list."+strconv.Itoa(i)+"user_id").String()
+		ho.Nickname = gjson.Get(bodyData, "data.legend_list."+strconv.Itoa(i)+"nickname").String()
+		ho.Avatar = gjson.Get(bodyData, "data.legend_list."+strconv.Itoa(i)+"avatar").String()
+		ho.Description = gjson.Get(bodyData, "data.legend_list."+strconv.Itoa(i)+"description").String()
+		gh.LegendList = append(gh.LegendList, ho)
+	}
+	for i := 0; i < int(gjson.Get(bodyData, "data.strong_newbie_list.#").Int()); i++ {
+		var ho Honor
+		ho.UserId = gjson.Get(bodyData, "data.strong_newbie_list."+strconv.Itoa(i)+"user_id").String()
+		ho.Nickname = gjson.Get(bodyData, "data.strong_newbie_list."+strconv.Itoa(i)+"nickname").String()
+		ho.Avatar = gjson.Get(bodyData, "data.strong_newbie_list."+strconv.Itoa(i)+"avatar").String()
+		ho.Description = gjson.Get(bodyData, "data.strong_newbie_list."+strconv.Itoa(i)+"description").String()
+		gh.StrongNewbieList = append(gh.StrongNewbieList, ho)
+	}
+	for i := 0; i < int(gjson.Get(bodyData, "data.emotion_list.#").Int()); i++ {
+		var ho Honor
+		ho.UserId = gjson.Get(bodyData, "data.emotion_list."+strconv.Itoa(i)+"user_id").String()
+		ho.Nickname = gjson.Get(bodyData, "data.emotion_list."+strconv.Itoa(i)+"nickname").String()
+		ho.Avatar = gjson.Get(bodyData, "data.emotion_list."+strconv.Itoa(i)+"avatar").String()
+		ho.Description = gjson.Get(bodyData, "data.emotion_list."+strconv.Itoa(i)+"description").String()
+		gh.EmotionList = append(gh.EmotionList, ho)
+	}
+	return gh
+}
+
+// GetCookies 获取 Cookies
+//该 API 暂未被 go-cqhttp 支持, 您可以提交 pr 以使该 API 被支持 提交 pr
+func (h Handle) GetCookies(domain string) string {
+	fromData := make(url.Values)
+	fromData.Add("domain", domain)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_cookies")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	cookies := gjson.Get(bodyData, "data.cookies").String()
+	return cookies
+}
+
+// GetCsrfToken 获取 CSRF Token
+//该 API 暂未被 go-cqhttp 支持, 您可以提交 pr 以使该 API 被支持 提交 pr
+func (h Handle) GetCsrfToken() string {
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/get_csrf_token"))
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	token := gjson.Get(bodyData, "data.token").String()
+	return token
+}
+
+// GetCredentials 获取 QQ 相关接口凭证
+//该 API 暂未被 go-cqhttp 支持, 您可以提交 pr 以使该 API 被支持 提交 pr
+//即GetCookies和GetCsrfToken两个接口的合并
+func (h Handle) GetCredentials(domain string) (string, string) {
+	fromData := make(url.Values)
+	fromData.Add("domain", domain)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_credentials")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return "", ""
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	cookies := gjson.Get(bodyData, "data.cookies").String()
+	token := gjson.Get(bodyData, "data.token").String()
+	return cookies, token
+}
