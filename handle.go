@@ -956,3 +956,182 @@ func (h Handle) GetCredentials(domain string) (string, string) {
 	token := gjson.Get(bodyData, "data.token").String()
 	return cookies, token
 }
+
+// GetRecord 获取语音
+// 该 API 暂未被 go-cqhttp 支持, 您可以提交 pr 以使该 API 被支持 提交 pr
+// 要使用此接口, 通常需要安装 ffmpeg, 请参考 OneBot 实现的相关说明。
+func (h Handle) GetRecord(file string, outFormat string) string {
+	fromData := make(url.Values)
+	fromData.Add("file", file)
+	fromData.Add("out_format", outFormat)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_record")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	filepath := gjson.Get(bodyData, "data.file").String()
+	return filepath
+}
+
+// CanSendImage 检查是否可以发送图片
+func (h Handle) CanSendImage() bool {
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/can_send_image"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	yes := gjson.Get(bodyData, "data.yes").Bool()
+	return yes
+
+}
+
+// CanSendRecord 检查是否可以发送语音
+func (h Handle) CanSendRecord() bool {
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/can_send_record"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	yes := gjson.Get(bodyData, "data.yes").Bool()
+	return yes
+
+}
+
+// GetVersionInfo 获取版本信息
+func (h Handle) GetVersionInfo() AppInfo {
+	var info AppInfo
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/get_version_info"))
+	if err != nil {
+		fmt.Println(err)
+		return info
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	info.AppName = gjson.Get(bodyData, "data.app_name").String()
+	info.AppVersion = gjson.Get(bodyData, "data.app_version").String()
+	info.AppFullName = gjson.Get(bodyData, "data.app_full_name").String()
+	info.ProtocolVersion = gjson.Get(bodyData, "data.protocol_version").String()
+	info.CoolQEdition = gjson.Get(bodyData, "data.coolq_edition").String()
+	info.CoolQDirectory = gjson.Get(bodyData, "data.coolq_directory").String()
+	info.GoCqHttp = gjson.Get(bodyData, "data.go-cqhttp").String()
+	info.PluginVersion = gjson.Get(bodyData, "data.plugin_version").String()
+	info.PluginBuildNumber = gjson.Get(bodyData, "data.plugin_build_number").String()
+	info.PluginBuildConfiguration = gjson.Get(bodyData, "data.plugin_build_configuration").String()
+	info.RuntimeVersion = gjson.Get(bodyData, "data.runtime_version").String()
+	info.RuntimeOs = gjson.Get(bodyData, "data.runtime_os").String()
+	info.Version = gjson.Get(bodyData, "data.version").String()
+	info.Protocol = gjson.Get(bodyData, "data.protocol").String()
+	return info
+}
+
+// SetRestart 重启 go-cqhttp
+func (h Handle) SetRestart(delay int) {
+	fromData := make(url.Values)
+	fromData.Add("delay", strconv.Itoa(delay))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/set_restart")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	// 该 API 无响应数据
+}
+
+// CleanCache 清理缓存
+func (h Handle) CleanCache() {
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/clean_cache"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	// 该 API 无响应数据
+}
+
+// SetGroupPortrait 设置群头像
+// 目前这个API在登录一段时间后因cookie失效而失效, 请考虑后使用
+func (h Handle) SetGroupPortrait(groupId int64, file string, cache int) {
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("file", file)
+	fromData.Add("cache", strconv.Itoa(cache))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/set_group_portrait")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+}
+
+// GetWordSlices 获取中文分词 ( 隐藏 API )
+// 警告:隐藏 API 是不建议一般用户使用的, 它们只应该在 OneBot 实现内部或由 SDK 和框架使用, 因为不正确的使用可能造成程序运行不正常。
+func (h Handle) GetWordSlices(content string) []string {
+	var slices []string
+	fromData := make(url.Values)
+	fromData.Add("content", content)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/.get_word_slices")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return slices
+
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	for i := 0; i < int(gjson.Get(bodyData, "data.slices.#").Int()); i++ {
+		s := gjson.Get(bodyData, "data.slices."+strconv.Itoa(i)).String()
+		slices = append(slices, s)
+	}
+	return slices
+}

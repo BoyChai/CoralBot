@@ -142,6 +142,25 @@ type Honor struct {
 	Description string
 }
 
+// AppInfo go-cqhttp版本信息
+// 此结构体主要用来返回值
+type AppInfo struct {
+	AppName                  string
+	AppVersion               string
+	AppFullName              string
+	ProtocolVersion          string
+	CoolQEdition             string
+	CoolQDirectory           string
+	GoCqHttp                 string
+	PluginVersion            string
+	PluginBuildNumber        string
+	PluginBuildConfiguration string
+	RuntimeVersion           string
+	RuntimeOs                string
+	Version                  string
+	Protocol                 string
+}
+
 func (e *Event) all_message() {
 	e.Time = gjson.Get(e.bodyData, "time").String()
 	e.SelfID = gjson.Get(e.bodyData, "self_id").String()
