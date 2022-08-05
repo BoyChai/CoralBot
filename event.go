@@ -161,6 +161,42 @@ type AppInfo struct {
 	Protocol                 string
 }
 
+// ImageOCR 图片 OCR返回数据
+type ImageOCR struct {
+	Texts    []TextDetection
+	Language string
+}
+
+// TextDetection 用于图片OCR结构体
+type TextDetection struct {
+	Test        string
+	Confidence  string
+	Coordinates string
+}
+
+// InvitedRequest 用于群系统邀请消息列表
+type InvitedRequest struct {
+	RequestId   string
+	InvitorUin  string
+	InvitorNick string
+	GroupId     string
+	GroupName   string
+	Checked     string
+	Actor       string
+}
+
+// JoinRequest 用于群系统邀请消息列表
+type JoinRequest struct {
+	RequestId     string
+	RequesterUin  string
+	RequesterNick string
+	Message       string
+	GroupId       string
+	GroupName     string
+	Checked       string
+	Actor         string
+}
+
 func (e *Event) all_message() {
 	e.Time = gjson.Get(e.bodyData, "time").String()
 	e.SelfID = gjson.Get(e.bodyData, "self_id").String()

@@ -1135,3 +1135,121 @@ func (h Handle) GetWordSlices(content string) []string {
 	}
 	return slices
 }
+
+// OcrImage 图片 OCR
+// 目前图片OCR接口仅支持接受的图片
+func (h Handle) OcrImage(image string) ImageOCR {
+	var ocr ImageOCR
+	fromData := make(url.Values)
+	fromData.Add("image", image)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/ocr_image")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return ocr
+
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	ocr.Language = gjson.Get(bodyData, "data.language").String()
+	for i := 0; i < int(gjson.Get(bodyData, "data.texts.#").Int()); i++ {
+		var texts TextDetection
+		texts.Test = gjson.Get(bodyData, "data.texts."+strconv.Itoa(i)+".text").String()
+		texts.Confidence = gjson.Get(bodyData, "data.texts."+strconv.Itoa(i)+".confidence").String()
+		texts.Coordinates = gjson.Get(bodyData, "data.texts."+strconv.Itoa(i)+".coordinates").String()
+		ocr.Texts = append(ocr.Texts, texts)
+	}
+	return ocr
+}
+
+// GetGroupSystemMsg 获取群系统消息
+// 如果列表不存在任何消息, 将返回 null
+func (h Handle) GetGroupSystemMsg() ([]InvitedRequest, []JoinRequest) {
+	var invited []InvitedRequest
+	var join []JoinRequest
+	request, err := http.Get(fmt.Sprintf("http://" + h.Host + "/get_group_system_msg"))
+	if err != nil {
+		fmt.Println(err)
+		return invited, join
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	for i := 0; i < int(gjson.Get(bodyData, "data.invited_requests.#").Int()); i++ {
+		var inv InvitedRequest
+		inv.RequestId = gjson.Get(bodyData, "data.invited_requests."+strconv.Itoa(i)+".request_id").String()
+		inv.InvitorUin = gjson.Get(bodyData, "data.invited_requests."+strconv.Itoa(i)+".invitor_uin").String()
+		inv.InvitorNick = gjson.Get(bodyData, "data.invited_requests."+strconv.Itoa(i)+".invitor_nick").String()
+		inv.GroupId = gjson.Get(bodyData, "data.invited_requests."+strconv.Itoa(i)+".group_id").String()
+		inv.GroupName = gjson.Get(bodyData, "data.invited_requests."+strconv.Itoa(i)+".group_name").String()
+		inv.Checked = gjson.Get(bodyData, "data.invited_requests."+strconv.Itoa(i)+".checked").String()
+		inv.Actor = gjson.Get(bodyData, "data.invited_requests."+strconv.Itoa(i)+".actor").String()
+		invited = append(invited, inv)
+	}
+	for i := 0; i < int(gjson.Get(bodyData, "data.join_requests.#").Int()); i++ {
+		var jo JoinRequest
+		jo.RequestId = gjson.Get(bodyData, "data.join_requests."+strconv.Itoa(i)+".request_id").String()
+		jo.RequesterUin = gjson.Get(bodyData, "data.join_requests."+strconv.Itoa(i)+".requester_uin").String()
+		jo.RequesterNick = gjson.Get(bodyData, "data.join_requests."+strconv.Itoa(i)+".requester_nick").String()
+		jo.Message = gjson.Get(bodyData, "data.join_requests."+strconv.Itoa(i)+".message").String()
+		jo.GroupId = gjson.Get(bodyData, "data.join_requests."+strconv.Itoa(i)+".group_id").String()
+		jo.GroupName = gjson.Get(bodyData, "data.join_requests."+strconv.Itoa(i)+".group_name").String()
+		jo.Checked = gjson.Get(bodyData, "data.join_requests."+strconv.Itoa(i)+".checked").String()
+		jo.Actor = gjson.Get(bodyData, "data.join_requests."+strconv.Itoa(i)+".actor").String()
+		join = append(join, jo)
+	}
+	return invited, join
+}
+
+// UploadPrivateFile 上传私聊文件
+func (h Handle) UploadPrivateFile(userId int64, file string, name string) {
+	fromData := make(url.Values)
+	fromData.Add("user_id", strconv.FormatInt(userId, 10))
+	fromData.Add("file", file)
+	fromData.Add("name", name)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/upload_private_file")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+}
+
+// UploadGroupFile 上传群文件
+func (h Handle) UploadGroupFile(groupId int64, file string, name string, folder string) {
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("file", file)
+	fromData.Add("name", name)
+	fromData.Add("folder", folder)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/upload_group_file")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+}
