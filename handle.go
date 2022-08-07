@@ -1253,3 +1253,205 @@ func (h Handle) UploadGroupFile(groupId int64, file string, name string, folder 
 		}
 	}(request.Body)
 }
+
+// GetGroupFileSystemInfo 获取群文件系统信息
+func (h Handle) GetGroupFileSystemInfo(groupId int64) GroupFileSystemInfo {
+	var g GroupFileSystemInfo
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_file_system_info")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return g
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	g.FileCount = gjson.Get(bodyData, "data.file_count").String()
+	g.LimitCount = gjson.Get(bodyData, "data.limit_count").String()
+	g.UsedSpace = gjson.Get(bodyData, "data.used_space").String()
+	g.TotalSpace = gjson.Get(bodyData, "data.total_space").String()
+	return g
+
+}
+
+// GetGroupRootFiles 获取群根目录文件列表
+func (h Handle) GetGroupRootFiles(groupId int64) (GroupFile, Folder) {
+	var files GroupFile
+	var folders Folder
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_root_files")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return files, folders
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	for i := 0; i < int(gjson.Get(bodyData, "data.files.#").Int()); i++ {
+		files.GroupId = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".group_id").String()
+		files.FileId = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".file_id").String()
+		files.FileName = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".file_name").String()
+		files.BusId = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".busid").String()
+		files.FileSize = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".file_size").String()
+		files.UploadTime = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".upload_time").String()
+		files.DeadTime = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".dead_time").String()
+		files.ModifyTime = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".modify_time").String()
+		files.DownloadTimes = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".download_times").String()
+		files.Uploader = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".uploader").String()
+		files.UploaderName = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".uploader_name").String()
+	}
+	for i := 0; i < int(gjson.Get(bodyData, "data.folders.#").Int()); i++ {
+		folders.GroupId = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".group_id").String()
+		folders.FolderId = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".folder_id").String()
+		folders.FolderName = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".folder_name").String()
+		folders.CreateTime = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".create_time").String()
+		folders.Creator = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".creator").String()
+		folders.CreatorName = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".creator_name").String()
+		folders.TotalFileCount = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".total_file_count").String()
+	}
+	return files, folders
+}
+
+// GetGroupFilesByFolder 获取群子目录文件列表
+func (h Handle) GetGroupFilesByFolder(groupId int64, folderId string) (GroupFile, Folder) {
+	var files GroupFile
+	var folders Folder
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("folder_id", folderId)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_files_by_folder")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+		return files, folders
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	for i := 0; i < int(gjson.Get(bodyData, "data.files.#").Int()); i++ {
+		files.GroupId = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".group_id").String()
+		files.FileId = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".file_id").String()
+		files.FileName = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".file_name").String()
+		files.BusId = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".busid").String()
+		files.FileSize = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".file_size").String()
+		files.UploadTime = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".upload_time").String()
+		files.DeadTime = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".dead_time").String()
+		files.ModifyTime = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".modify_time").String()
+		files.DownloadTimes = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".download_times").String()
+		files.Uploader = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".uploader").String()
+		files.UploaderName = gjson.Get(bodyData, "data.files."+strconv.Itoa(i)+".uploader_name").String()
+	}
+	for i := 0; i < int(gjson.Get(bodyData, "data.folders.#").Int()); i++ {
+		folders.GroupId = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".group_id").String()
+		folders.FolderId = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".folder_id").String()
+		folders.FolderName = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".folder_name").String()
+		folders.CreateTime = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".create_time").String()
+		folders.Creator = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".creator").String()
+		folders.CreatorName = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".creator_name").String()
+		folders.TotalFileCount = gjson.Get(bodyData, "data.folders."+strconv.Itoa(i)+".total_file_count").String()
+	}
+	return files, folders
+}
+
+// CreateGroupFileFolder 创建群文件文件夹
+func (h Handle) CreateGroupFileFolder(groupId int64, name string, parentId string) {
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("name", name)
+	fromData.Add("parent_id", parentId)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/create_group_file_folder")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+}
+
+// DeleteGroupFolder 删除群文件夹
+func (h Handle) DeleteGroupFolder(groupId int64, folderId string) {
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("folder_id", folderId)
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/delete_group_folder")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+}
+
+// DeleteGroupFile 删除群文件
+func (h Handle) DeleteGroupFile(groupId int64, fileId string, busId int32) {
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("file_id", fileId)
+	fromData.Add("busid", fmt.Sprint(busId))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/delete_group_file")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+}
+
+// GetGroupFileUrl 获取群文件资源链接
+func (h Handle) GetGroupFileUrl(groupId int64, fileId string, busId int32) string {
+	fromData := make(url.Values)
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	fromData.Add("file_id", fileId)
+	fromData.Add("busid", fmt.Sprint(busId))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_file_url")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	return gjson.Get(bodyData, "data.url").String()
+}

@@ -197,6 +197,40 @@ type JoinRequest struct {
 	Actor         string
 }
 
+// GroupFileSystemInfo 群文件信息用于群文件相关函数Handle返回
+type GroupFileSystemInfo struct {
+	FileCount  string
+	LimitCount string
+	UsedSpace  string
+	TotalSpace string
+}
+
+// GroupFile 群文件信息用于群文件相关函数Handle返回
+type GroupFile struct {
+	GroupId       string
+	FileId        string
+	FileName      string
+	BusId         string
+	FileSize      string
+	UploadTime    string
+	DeadTime      string
+	ModifyTime    string
+	DownloadTimes string
+	Uploader      string
+	UploaderName  string
+}
+
+// Folder 群文件夹信息用于群文件相关函数Handle返回
+type Folder struct {
+	GroupId        string
+	FolderId       string
+	FolderName     string
+	CreateTime     string
+	Creator        string
+	CreatorName    string
+	TotalFileCount string
+}
+
 func (e *Event) all_message() {
 	e.Time = gjson.Get(e.bodyData, "time").String()
 	e.SelfID = gjson.Get(e.bodyData, "self_id").String()
