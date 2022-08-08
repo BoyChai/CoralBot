@@ -1110,31 +1110,31 @@ func (h Handle) SetGroupPortrait(groupId int64, file string, cache int) {
 
 // GetWordSlices 获取中文分词 ( 隐藏 API )
 // 警告:隐藏 API 是不建议一般用户使用的, 它们只应该在 OneBot 实现内部或由 SDK 和框架使用, 因为不正确的使用可能造成程序运行不正常。
-func (h Handle) GetWordSlices(content string) []string {
-	var slices []string
-	fromData := make(url.Values)
-	fromData.Add("content", content)
-	data := strings.NewReader(fromData.Encode())
-	addr := fmt.Sprintf("http://" + h.Host + "/.get_word_slices")
-	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
-	if err != nil {
-		fmt.Println(err)
-		return slices
-
-	}
-	bodyData := h.noData(request.Body)
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(request.Body)
-	for i := 0; i < int(gjson.Get(bodyData, "data.slices.#").Int()); i++ {
-		s := gjson.Get(bodyData, "data.slices."+strconv.Itoa(i)).String()
-		slices = append(slices, s)
-	}
-	return slices
-}
+//func (h Handle) GetWordSlices(content string) []string {
+//	var slices []string
+//	fromData := make(url.Values)
+//	fromData.Add("content", content)
+//	data := strings.NewReader(fromData.Encode())
+//	addr := fmt.Sprintf("http://" + h.Host + "/.get_word_slices")
+//	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+//	if err != nil {
+//		fmt.Println(err)
+//		return slices
+//
+//	}
+//	bodyData := h.noData(request.Body)
+//	defer func(Body io.ReadCloser) {
+//		err := Body.Close()
+//		if err != nil {
+//			fmt.Println(err)
+//		}
+//	}(request.Body)
+//	for i := 0; i < int(gjson.Get(bodyData, "data.slices.#").Int()); i++ {
+//		s := gjson.Get(bodyData, "data.slices."+strconv.Itoa(i)).String()
+//		slices = append(slices, s)
+//	}
+//	return slices
+//}
 
 // OcrImage 图片 OCR
 // 目前图片OCR接口仅支持接受的图片
@@ -1650,10 +1650,26 @@ func (h Handle) GetOnlineClients(noCache bool) []Clients {
 	return clients
 }
 
-//获取群消息历史记录
-//func (h Handle)GetGroupMsgHistory()  {
-//
-//}
+// GetGroupMsgHistory 获取群消息历史记录
+func (h Handle) GetGroupMsgHistory(messageSeq int64, groupId int64) string {
+	fromData := make(url.Values)
+	fromData.Add("message_seq", strconv.FormatInt(messageSeq, 10))
+	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
+	data := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf("http://" + h.Host + "/get_group_msg_history")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	bodyData := h.noData(request.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	return bodyData
+}
 
 // SetEssenceMsg 设置精华消息
 func (h Handle) SetEssenceMsg(messageId int32) {
