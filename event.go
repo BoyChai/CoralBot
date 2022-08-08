@@ -231,6 +231,76 @@ type Folder struct {
 	TotalFileCount string
 }
 
+// Status 当前状态结构体 用于api返回
+type Status struct {
+	AppInitialized string
+	AppEnabled     string
+	PluginsGood    string
+	AppGood        string
+	Online         string
+	Good           string
+	Stat           Statistics
+}
+
+// Statistics 当前状态结构体 用于api返回
+type Statistics struct {
+	PacketReceived  string
+	PacketSent      string
+	PacketLost      string
+	MessageReceived string
+	MessageSent     string
+	DisconnectTimes string
+	LostTimes       string
+	LastMessageTime string
+}
+
+// GroupAtAllRemain @全体成员剩余次数 用于api返回
+type GroupAtAllRemain struct {
+	CanAtAll                 string
+	RemainAtAllCountForGroup string
+	RemainAtAllCountForUin   string
+}
+
+// GroupNotice 群公告信息 用于api返回
+type GroupNotice struct {
+	SenderId    string
+	PublishTime string
+	Message     GroupNoticeMessage
+}
+type GroupNoticeMessage struct {
+	Text   string
+	Images GroupNoticeImages
+}
+type GroupNoticeImages struct {
+	Height string
+	Width  string
+	Id     string
+}
+
+// Clients 账号在线客户端数据 用于api返回
+type Clients struct {
+	AppId      string
+	DeviceName string
+	DeviceKind string
+}
+
+// EssenceMsg 精华消息信息 用于api返回
+type EssenceMsg struct {
+	SenderId     string
+	SenderNick   string
+	SenderTime   string
+	OperatorId   string
+	OperatorNick string
+	OperatorTime string
+	MessageId    string
+}
+
+// Variant 获取在线机型 用于api返回
+type Variant struct {
+	ModelShow string
+	NeedPay   string
+}
+
 func (e *Event) all_message() {
 	e.Time = gjson.Get(e.bodyData, "time").String()
 	e.SelfID = gjson.Get(e.bodyData, "self_id").String()
