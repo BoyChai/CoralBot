@@ -20,15 +20,6 @@ type Condition struct {
 var Tasks []Task
 
 // NewTask 创建一个动作
-//func NewTask(mode string, message string, run func()) {
-//	var action Task
-//	action.Mode = mode
-//	action.Message = message
-//	action.Run = run
-//	Tasks = append(Tasks, action)
-//}
-
-// NewTask 创建一个动作
 func NewTask(task Task) {
 	Tasks = append(Tasks, task)
 }
