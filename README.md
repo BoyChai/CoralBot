@@ -29,14 +29,18 @@ $ touch example.go
 ```
 package main
 
-import "github.com/BoyChai/CoralBot"
+import (
+	"fmt"
+	coral "github.com/BoyChai/CoralBot"
+	"strconv"
+)
 
 func main() {
-	var e CoralBot.Event
-	h := CoralBot.Handle{
+	var e coral.Event
+	h := coral.Handle{
 		Host: "127.0.0.1:5700",
 	}
-	c1 := []CoralBot.Condition{{
+	c1 := []coral.Condition{{
 		Key:   &e.Message,
 		Value: "hello",
 		Regex: true,
@@ -44,14 +48,21 @@ func main() {
 		Key:   &e.GroupID,
 		Value: "群号",
 	}}
-	CoralBot.NewTask(CoralBot.Task{
+	coral.NewTask(coral.Task{
 		Mode:      "all_message",
 		Condition: c1,
 		Run: func() {
-			h.SendMsg("", e.GroupID, "你好", "")
+			groupId, err := strconv.ParseInt(e.GroupID, 10, 64)
+			if err != nil {
+				fmt.Println(err)
+			}
+			h.SendMsg(coral.Msg{
+				GroupId: groupId,
+				Message: "你好",
+			})
 		},
 	})
-	CoralBot.RunCoralBot(":8080", &e)
+	coral.RunCoralBot(":8080", &e)
 }
 ```
 
