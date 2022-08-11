@@ -15,15 +15,21 @@ type Handle struct {
 	Host      string
 	Agreement string
 }
+type Msg struct {
+	UserId     int64
+	GroupId    int64
+	Message    string
+	AutoEscape bool
+}
 
 // SendPrivateMsg 发送私聊消息
-func (h Handle) SendPrivateMsg(userId int64, groupId int64, message string, autoEscape bool) (map[string]interface{}, error) {
+func (h Handle) SendPrivateMsg(m Msg) (map[string]interface{}, error) {
 	var data map[string]interface{}
 	fromData := make(url.Values)
-	fromData.Add("user_id", strconv.FormatInt(userId, 10))
-	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
-	fromData.Add("message", message)
-	fromData.Add("auto_escape", fmt.Sprint(autoEscape))
+	fromData.Add("user_id", strconv.FormatInt(m.UserId, 10))
+	fromData.Add("group_id", strconv.FormatInt(m.GroupId, 10))
+	fromData.Add("message", m.Message)
+	fromData.Add("auto_escape", fmt.Sprint(m.AutoEscape))
 	readerData := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/send_private_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
@@ -47,13 +53,14 @@ func (h Handle) SendPrivateMsg(userId int64, groupId int64, message string, auto
 }
 
 // SendGroupMsg 发送群聊消息
-func (h Handle) SendGroupMsg(groupId int64, message string, autoEscape string) (map[string]interface{}, error) {
+//func (h Handle) SendGroupMsg(groupId int64, message string, autoEscape string) (map[string]interface{}, error) {
+func (h Handle) SendGroupMsg(m Msg) (map[string]interface{}, error) {
 	var data map[string]interface{}
 
 	fromData := make(url.Values)
-	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
-	fromData.Add("message", message)
-	fromData.Add("auto_escape", autoEscape)
+	fromData.Add("group_id", strconv.FormatInt(m.GroupId, 10))
+	fromData.Add("message", m.Message)
+	fromData.Add("auto_escape", fmt.Sprint(m.AutoEscape))
 	readerData := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/send_group_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
@@ -96,13 +103,14 @@ func (h Handle) SendGroupMsg(groupId int64, message string, autoEscape string) (
 //}
 
 // SendMsg 发送消息
-func (h Handle) SendMsg(userId int64, groupId int64, message string, autoEscape string) (map[string]interface{}, error) {
+//func (h Handle) SendMsg(userId int64, groupId int64, message string, autoEscape string) (map[string]interface{}, error) {
+func (h Handle) SendMsg(m Msg) (map[string]interface{}, error) {
 	var data map[string]interface{}
 	fromData := make(url.Values)
-	fromData.Add("user_id", strconv.FormatInt(userId, 10))
-	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
-	fromData.Add("message", message)
-	fromData.Add("auto_escape", autoEscape)
+	fromData.Add("user_id", strconv.FormatInt(m.UserId, 10))
+	fromData.Add("group_id", strconv.FormatInt(m.GroupId, 10))
+	fromData.Add("message", m.Message)
+	fromData.Add("auto_escape", fmt.Sprint(m.AutoEscape))
 	readerData := strings.NewReader(fromData.Encode())
 	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/send_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
