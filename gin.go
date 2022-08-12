@@ -8,6 +8,7 @@ import (
 )
 
 func RunCoralBot(port string, e *Event) {
+	var init Event
 	g := gin.Default()
 	g.POST("/", func(c *gin.Context) {
 		dataReader := c.Request.Body
@@ -16,6 +17,7 @@ func RunCoralBot(port string, e *Event) {
 			fmt.Println(err)
 		}
 		//e.Parse(bodyData)
+		*e = init
 		e.bodyData = string(bodyData)
 		e.explain()
 	})

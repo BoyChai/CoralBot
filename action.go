@@ -12,7 +12,7 @@ type Task struct {
 
 // Condition 触发条件
 type Condition struct {
-	Key   *string
+	Key   interface{}
 	Value string
 	Regex bool
 }

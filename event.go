@@ -1,230 +1,118 @@
 package CoralBot
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
-
-	"github.com/tidwall/gjson"
 )
 
 // Event 消息全部信息
 type Event struct {
 	//https://docs.go-cqhttp.org/event/#%E9%80%9A%E7%94%A8%E6%95%B0%E6%8D%AE
 	bodyData    string
-	Time        string
-	SelfID      string
-	PostType    string
-	MessageType string
-	SubType     string
-	MessageId   string
-	UserID      string
-	Message     string
-	RawMessage  string
-	GroupID     string
-	Font        string
-	Sender      Sender
-	TempSource  string
-	Anonymous   Anonymous
-	NoticeType  string
-	File        File
-	OperatorId  string
-	Duration    string
-	TargetId    string
-	Comment     string
-	Flag        string
-	RealId      string
-	Messages    []ForwardMessage
-	Image       Image
-	QiDian      QiDian
-}
-
-// Sender 账号信息
-type Sender struct {
-	GroupID         string
-	UserID          string
-	Nickname        string
-	Sex             string
-	Age             string
-	QID             string
-	Card            string
-	Area            string
-	Level           string
-	Role            string
-	Title           string
-	LoginDays       string
-	Remark          string
-	Source          string
-	JoinTime        string
-	LastSentTime    string
-	Unfriendly      string
-	TitleExpireTime string
-	CardChangeable  string
-	ShutUpTimestamp string
-}
-
-// Anonymous 匿名信息
-type Anonymous struct {
-	ID   string
-	Name string
-	Flag string
-}
-
-// File 文件信息
-type File struct {
-	ID    string
-	Name  string
-	Size  string
-	BusId string
-}
-
-// ForwardMessage 合并转发内容
-type ForwardMessage struct {
-	Content string
-	Sender  Sender
-	Time    string
-}
-
-// Image 图片信息
-type Image struct {
-	Size     string
-	Filename string
-	Url      string
-}
-
-// QiDian 企点资料
-type QiDian struct {
-	MasterId   string
-	ExtName    string
-	CreateTime string
-}
-
-// Profile 账号资料
-// 此结构体主要用来api传参
-type Profile struct {
-	Nickname     string
-	Company      string
-	Email        string
-	College      string
-	PersonalNote string
-}
-
-func (e *Event) all_message() {
-	e.Time = gjson.Get(e.bodyData, "time").String()
-	e.SelfID = gjson.Get(e.bodyData, "self_id").String()
-	e.PostType = gjson.Get(e.bodyData, "post_type").String()
-	e.MessageType = gjson.Get(e.bodyData, "message_type").String()
-	e.SubType = gjson.Get(e.bodyData, "sub_type").String()
-	e.MessageId = gjson.Get(e.bodyData, "message_id").String()
-	e.UserID = gjson.Get(e.bodyData, "user_id").String()
-	e.GroupID = gjson.Get(e.bodyData, "group_id").String()
-	e.Message = gjson.Get(e.bodyData, "message").String()
-	e.RawMessage = gjson.Get(e.bodyData, "raw_message").String()
-	e.Font = gjson.Get(e.bodyData, "font").String()
-	e.Sender.UserID = gjson.Get(e.bodyData, "sender.user_id").String()
-	e.Sender.Nickname = gjson.Get(e.bodyData, "sender.nickname").String()
-	e.Sender.Sex = gjson.Get(e.bodyData, "sender.sex").String()
-	e.Sender.Age = gjson.Get(e.bodyData, "sender.age").String()
-	e.Sender.Card = gjson.Get(e.bodyData, "sender.card").String()
-	e.Sender.Area = gjson.Get(e.bodyData, "sender.area").String()
-	e.Sender.Level = gjson.Get(e.bodyData, "sender.level").String()
-	e.Sender.Role = gjson.Get(e.bodyData, "sender.role").String()
-	e.Sender.Title = gjson.Get(e.bodyData, "sender.title").String()
-	e.TempSource = gjson.Get(e.bodyData, "temp_source").String()
-	e.Anonymous.ID = gjson.Get(e.bodyData, "anonymous.id").String()
-	e.Anonymous.Name = gjson.Get(e.bodyData, "anonymous.name").String()
-	e.Anonymous.Flag = gjson.Get(e.bodyData, "anonymous.flag").String()
-}
-
-func (e *Event) private_message() {
-	e.Time = gjson.Get(e.bodyData, "time").String()
-	e.SelfID = gjson.Get(e.bodyData, "self_id").String()
-	e.PostType = gjson.Get(e.bodyData, "post_type").String()
-	e.MessageType = gjson.Get(e.bodyData, "message_type").String()
-	e.SubType = gjson.Get(e.bodyData, "sub_type").String()
-	e.MessageId = gjson.Get(e.bodyData, "message_id").String()
-	e.UserID = gjson.Get(e.bodyData, "user_id").String()
-	e.Message = gjson.Get(e.bodyData, "message").String()
-	e.RawMessage = gjson.Get(e.bodyData, "raw_message").String()
-	e.Font = gjson.Get(e.bodyData, "font").String()
-	e.Sender.UserID = gjson.Get(e.bodyData, "sender.user_id").String()
-	e.Sender.Nickname = gjson.Get(e.bodyData, "sender.nickname").String()
-	e.Sender.Sex = gjson.Get(e.bodyData, "sender.sex").String()
-	e.Sender.Age = gjson.Get(e.bodyData, "sender.age").String()
-	e.Sender.Card = gjson.Get(e.bodyData, "sender.card").String()
-	e.Sender.Area = gjson.Get(e.bodyData, "sender.area").String()
-	e.Sender.Level = gjson.Get(e.bodyData, "sender.level").String()
-	e.Sender.Role = gjson.Get(e.bodyData, "sender.role").String()
-	e.Sender.Title = gjson.Get(e.bodyData, "sender.title").String()
-	e.TempSource = gjson.Get(e.bodyData, "temp_source").String()
-}
-
-func (e *Event) group_message() {
-	e.Time = gjson.Get(e.bodyData, "time").String()
-	e.SelfID = gjson.Get(e.bodyData, "self_id").String()
-	e.PostType = gjson.Get(e.bodyData, "post_type").String()
-	e.MessageType = gjson.Get(e.bodyData, "message_type").String()
-	e.SubType = gjson.Get(e.bodyData, "sub_type").String()
-	e.MessageId = gjson.Get(e.bodyData, "message_id").String()
-	e.UserID = gjson.Get(e.bodyData, "user_id").String()
-	e.GroupID = gjson.Get(e.bodyData, "group_id").String()
-	e.Message = gjson.Get(e.bodyData, "message").String()
-	e.RawMessage = gjson.Get(e.bodyData, "raw_message").String()
-	e.Font = gjson.Get(e.bodyData, "font").String()
-	e.Sender.UserID = gjson.Get(e.bodyData, "sender.user_id").String()
-	e.Sender.Nickname = gjson.Get(e.bodyData, "sender.nickname").String()
-	e.Sender.Sex = gjson.Get(e.bodyData, "sender.sex").String()
-	e.Sender.Age = gjson.Get(e.bodyData, "sender.age").String()
-	e.Sender.Card = gjson.Get(e.bodyData, "sender.card").String()
-	e.Sender.Area = gjson.Get(e.bodyData, "sender.area").String()
-	e.Sender.Level = gjson.Get(e.bodyData, "sender.level").String()
-	e.Sender.Role = gjson.Get(e.bodyData, "sender.role").String()
-	e.Sender.Title = gjson.Get(e.bodyData, "sender.title").String()
-	e.Anonymous.ID = gjson.Get(e.bodyData, "anonymous.id").String()
-	e.Anonymous.Name = gjson.Get(e.bodyData, "anonymous.name").String()
-	e.Anonymous.Flag = gjson.Get(e.bodyData, "anonymous.flag").String()
+	PostType    string `json:"post_type"`
+	MessageType string `json:"message_type"`
+	Time        int64  `json:"time"`
+	SelfID      int64  `json:"self_id"`
+	SubType     string `json:"sub_type"`
+	RawMessage  string `json:"raw_message"`
+	Font        int32  `json:"font"`
+	TempSource  int64  `json:"temp_source"`
+	Sender      struct {
+		Age      int32  `json:"age"`
+		Nickname string `json:"nickname"`
+		Sex      string `json:"sex"`
+		UserID   int64  `json:"user_id"`
+		Area     string `json:"area"`
+		Card     string `json:"card"`
+		Level    string `json:"level"`
+		Role     string `json:"role"`
+		Title    string `json:"title"`
+	} `json:"sender"`
+	Anonymous struct {
+		ID   int64  `json:"id"`
+		Name string `json:"name"`
+		Flag string `json:"flag"`
+	} `json:"anonymous"`
+	GroupID    int64  `json:"group_id"`
+	Message    string `json:"message"`
+	MessageSeq int    `json:"message_seq"`
+	UserID     int64  `json:"user_id"`
+	MessageID  int32  `json:"message_id"`
+	NoticeType string `json:"notice_type"`
+	File       struct {
+		BusID int64  `json:"busid"`
+		ID    string `json:"id"`
+		Name  string `json:"name"`
+		Size  int64  `json:"size"`
+		URL   string `json:"url"`
+	} `json:"file"`
+	OperatorID int64  `json:"operator_id"`
+	Duration   int64  `json:"duration"`
+	SenderID   int64  `json:"sender_id"`
+	TargetID   int64  `json:"target_id"`
+	HonorType  string `json:"honor_type"`
+	CardNew    string `json:"card_new"`
+	CardOld    string `json:"card_old"`
+	Comment    string `json:"comment"`
+	Flag       string `json:"flag"`
+	Client     struct {
+		AppId      int64  `json:"app_id"`
+		DeviceName string `json:"device_name"`
+		DeviceKind string `json:"device_kind"`
+	} `json:"client"`
+	Online bool `json:"online"`
 }
 
 // explain 解析命令函数
 func (e *Event) explain() {
 	for i := 0; i < cap(Tasks); i++ {
 		task := Tasks[i]
-		// switch判断触发器类型
-		switch task.Mode {
-		case "all_message":
-			e.all_message()
-			e.filterStart(task)
-		case "private_message":
-			e.private_message()
-			e.filterStart(task)
-		case "group_message":
-			e.group_message()
-			e.filterStart(task)
-		default:
-			fmt.Printf("%v事件解析失败", task.Mode)
+		err := json.Unmarshal([]byte(e.bodyData), &e)
+		if err != nil {
+			fmt.Println("command parsing error,please feedback to the developer.error:", err)
 		}
+		e.filterStart(task)
 	}
 }
+
+// 过滤
 func (e *Event) filterStart(task Task) {
 	for t := 1; t <= cap(task.Condition); t++ {
+		//fmt.Println(*task.Condition[t-1].Key.(reflect.TypeOf(task.Condition[t-1].Key))
+		conditionKey, _ := e.typeAsserts(task.Condition[t-1].Key)
 		if t == cap(task.Condition) {
 			if task.Condition[t-1].Regex == true {
-				key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+				key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 				if key {
 					task.Run()
 				}
 			}
-			if *task.Condition[t-1].Key == task.Condition[t-1].Value {
+			if fmt.Sprint(conditionKey) == task.Condition[t-1].Value {
 				task.Run()
 			}
 		}
 		if task.Condition[t-1].Regex == true {
-			key, _ := regexp.MatchString(task.Condition[t-1].Value, *task.Condition[t-1].Key)
+			key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 			if key != true {
 				break
 			}
 		}
-		if *task.Condition[t-1].Key != task.Condition[t-1].Value {
+		if fmt.Sprint(conditionKey) != task.Condition[t-1].Value {
 			break
 		}
+	}
+}
+
+// 类型断言
+func (e *Event) typeAsserts(key interface{}) (interface{}, error) {
+	switch key.(type) {
+	case *int64:
+		return *key.(*int64), nil
+	case *string:
+		return *key.(*string), nil
+	default:
+		return nil, errors.New("The current type is not supported. Please feedback through issue")
 	}
 }

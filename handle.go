@@ -123,7 +123,9 @@ func (h Handle) SendMsg(m Msg) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -149,7 +151,9 @@ func (h Handle) DeleteMsg(messageId int32) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -175,7 +179,9 @@ func (h Handle) GetMsg(messageId int32) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -201,7 +207,9 @@ func (h Handle) GetForwardMsg(messageId int32) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -227,7 +235,9 @@ func (h Handle) GetImage(file string) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -254,7 +264,9 @@ func (h Handle) MarkMsgAsRead(messageId int32) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -282,7 +294,9 @@ func (h Handle) SetGroupKick(groupId int64, userId int64, rejectAddRequest bool)
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -310,7 +324,9 @@ func (h Handle) SetGroupBan(groupId int64, userId int64, duration string) (map[s
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -339,7 +355,9 @@ func (h Handle) SetGroupAnonymousBan(groupId int64, flag string, duration string
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -366,7 +384,9 @@ func (h Handle) SetGroupWholeBan(groupId int64, enable bool) (map[string]interfa
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -394,7 +414,9 @@ func (h Handle) SetGroupAdmin(groupId int64, userId int64, enable bool) (map[str
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -421,7 +443,9 @@ func (h Handle) SetGroupAnonymous(groupId int64, enable bool) (map[string]interf
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -449,7 +473,9 @@ func (h Handle) SetGroupName(groupId int64, groupName string) (map[string]interf
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -476,7 +502,9 @@ func (h Handle) SetGroupLeave(groupId int64, isDismiss bool) (map[string]interfa
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -506,7 +534,9 @@ func (h Handle) SetGroupSpecialTitle(groupId int64, userId int64, specialTitle s
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -532,7 +562,9 @@ func (h Handle) SendGroupSign(groupId int64) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -561,7 +593,9 @@ func (h Handle) SetFriendAddRequest(flag string, approve bool, remark string) (m
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -590,7 +624,9 @@ func (h Handle) SetGroupAddRequest(flag string, subType string, approve bool, re
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -612,7 +648,9 @@ func (h Handle) GetLoginInfo() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -635,13 +673,24 @@ func (h Handle) QiDianGetAccountInfo() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		return data, err
 	}
 	return data, nil
+}
+
+// Profile 账号资料
+type Profile struct {
+	Nickname     string
+	Company      string
+	Email        string
+	College      string
+	PersonalNote string
 }
 
 // SetQQProfile 设置登录号资料
@@ -665,7 +714,9 @@ func (h Handle) SetQQProfile(p Profile) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -692,7 +743,9 @@ func (h Handle) GetStrangerInfo(userId int64, noCache bool) (map[string]interfac
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -714,7 +767,9 @@ func (h Handle) GetFriendList() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -736,7 +791,9 @@ func (h Handle) GetUnidirectionalFriendList() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -762,7 +819,9 @@ func (h Handle) DeleteFriend(friendId int64) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -789,7 +848,9 @@ func (h Handle) GetGroupInfo(groupId int64, noCache bool) (map[string]interface{
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -811,7 +872,9 @@ func (h Handle) GetGroupList() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -839,7 +902,9 @@ func (h Handle) GetGroupMemberInfo(groupId int64, userId int64, noCache bool) (m
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -865,7 +930,9 @@ func (h Handle) GetGroupMemberList(groupId int64) (map[string]interface{}, error
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -892,7 +959,9 @@ func (h Handle) GetGroupHonorInfo(groupId int64, typ string) (map[string]interfa
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -919,7 +988,9 @@ func (h Handle) GetCookies(domain string) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -942,7 +1013,9 @@ func (h Handle) GetCsrfToken() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -970,7 +1043,9 @@ func (h Handle) GetCredentials(domain string) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1000,7 +1075,9 @@ func (h Handle) GetRecord(file string, outFormat string) (map[string]interface{}
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1022,7 +1099,9 @@ func (h Handle) CanSendImage() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1044,7 +1123,9 @@ func (h Handle) CanSendRecord() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1066,7 +1147,9 @@ func (h Handle) GetVersionInfo() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1093,7 +1176,9 @@ func (h Handle) SetRestart(delay int) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1115,7 +1200,9 @@ func (h Handle) CleanCache() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1144,7 +1231,9 @@ func (h Handle) SetGroupPortrait(groupId int64, file string, cache int) (map[str
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1163,7 +1252,9 @@ func (h Handle) SetGroupPortrait(groupId int64, file string, cache int) (map[str
 //	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/.get_word_slices")
 //	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
 //	if err != nil {
-//		fmt.Println(err)
+//		if err!=nil {
+//			fmt.Println(err)
+//}
 //		return slices
 //
 //	}
@@ -1199,7 +1290,9 @@ func (h Handle) OcrImage(image string) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1222,7 +1315,9 @@ func (h Handle) GetGroupSystemMsg() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1250,7 +1345,9 @@ func (h Handle) UploadPrivateFile(userId int64, file string, name string) (map[s
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1279,7 +1376,9 @@ func (h Handle) UploadGroupFile(groupId int64, file string, name string, folder 
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1305,7 +1404,9 @@ func (h Handle) GetGroupFileSystemInfo(groupId int64) (map[string]interface{}, e
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1331,7 +1432,9 @@ func (h Handle) GetGroupRootFiles(groupId int64) (map[string]interface{}, error)
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1358,7 +1461,9 @@ func (h Handle) GetGroupFilesByFolder(groupId int64, folderId string) (map[strin
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1386,7 +1491,9 @@ func (h Handle) CreateGroupFileFolder(groupId int64, name string, parentId strin
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1413,7 +1520,9 @@ func (h Handle) DeleteGroupFolder(groupId int64, folderId string) (map[string]in
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1441,7 +1550,9 @@ func (h Handle) DeleteGroupFile(groupId int64, fileId string, busId int32) (map[
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1469,7 +1580,9 @@ func (h Handle) GetGroupFileUrl(groupId int64, fileId string, busId int32) (map[
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1491,7 +1604,9 @@ func (h Handle) GetStatus() (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1517,7 +1632,9 @@ func (h Handle) GetGroupAtAllRemain(groupId int64) (map[string]interface{}, erro
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1550,7 +1667,9 @@ func (h Handle) SendGroupNotice(groupId int64, content string, image string) (ma
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1576,7 +1695,9 @@ func (h Handle) GetGroupNotice(groupId int64) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1602,7 +1723,9 @@ func (h Handle) ReloadEventFilter(file string) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1630,7 +1753,9 @@ func (h Handle) DownloadFile(fileUrl string, threadCount int32, headers string) 
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1656,7 +1781,9 @@ func (h Handle) GetOnlineClients(noCache bool) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1683,7 +1810,9 @@ func (h Handle) GetGroupMsgHistory(messageSeq int64, groupId int64) (map[string]
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1709,7 +1838,9 @@ func (h Handle) SetEssenceMsg(messageId int32) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1735,7 +1866,9 @@ func (h Handle) DeleteEssenceMsg(messageId int32) (map[string]interface{}, error
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1761,7 +1894,9 @@ func (h Handle) GetEssenceMsgList(groupId int64) (map[string]interface{}, error)
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1787,7 +1922,9 @@ func (h Handle) CheckUrlSafely(u string) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1811,7 +1948,9 @@ func (h Handle) GetModelShow(model string) (map[string]interface{}, error) {
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -1838,7 +1977,9 @@ func (h Handle) SetModelShow(model string, modelShow string) (map[string]interfa
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}(request.Body)
 	err = json.Unmarshal(body, &data)
 	if err != nil {
