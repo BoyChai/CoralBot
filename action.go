@@ -2,10 +2,6 @@ package CoralBot
 
 // Task 创建一个任务
 type Task struct {
-	//触发条件类型
-	Mode string
-	//Message string
-	//触发条件
 	Condition []Condition
 	Run       func()
 }

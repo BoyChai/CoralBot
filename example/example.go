@@ -19,7 +19,6 @@ func main() {
 		Value: "你的qq群号",
 	}}
 	coral.NewTask(coral.Task{
-		Mode:      "all_message",
 		Condition: c1,
 		Run: func() {
 			h.SendMsg(coral.Msg{

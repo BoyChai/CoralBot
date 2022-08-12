@@ -48,7 +48,6 @@ func main() {
 		Value: "你的qq群号",
 	}}
 	coral.NewTask(coral.Task{
-		Mode:      "all_message",
 		Condition: c1,
 		Run: func() {
 			h.SendMsg(coral.Msg{
@@ -59,6 +58,7 @@ func main() {
 	})
 	coral.RunCoralBot(":8080", &e)
 }
+
 ```
 
 您可以通过以下方式运行代码`go run example.go`，运行之后可以在群聊里面发送hello即可收到回复。
