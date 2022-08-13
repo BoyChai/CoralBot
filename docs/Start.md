@@ -1,14 +1,15 @@
-# CoralBot
+# 兼容性
 
-## 概述
+- [动作](/hanlder)
+- [事件](/Event)
 
-基于基于go-cqhttp的后端开发库
-
-## 快速开始
+# 快速开始
 
 ### 要求
 
-- go 1.18以上
+- go-cqhttp
+
+- golang语言
 
 ### 安装
 
@@ -45,7 +46,7 @@ func main() {
 		Regex: true,
 	}, {
 		Key:   &e.GroupID,
-		Value: "你的qq群号",
+		Value: "<你的QQ群号>",
 	}}
 	coral.NewTask(coral.Task{
 		Condition: c1,
@@ -63,4 +64,5 @@ func main() {
 
 您可以通过以下方式运行代码`go run example.go`，运行之后可以在群聊里面发送hello即可收到回复。效果如下：
 
-![效果](/docs/img/20220813102834.png)
+![效果](img/20220813102834.png)
+

@@ -82,24 +82,33 @@ func (h Handle) SendGroupMsg(m Msg) (map[string]interface{}, error) {
 	return data, nil
 }
 
-// SendGroupForwardMsg 发送合并转发 ( 群 )
-//func (h Handle) SendGroupForwardMsg(groupId int64, message string) {
-//	var e Event
+//SendGroupForwardMsg 发送合并转发(群)
+//func (h Handle) SendGroupForwardMsg(groupId int64, message string) (map[string]interface{}, error) {
+//	var data map[string]interface{}
 //	fromData := make(url.Values)
-//	fromData.Add("group_id", groupId)
+//	fromData.Add("group_id", strconv.FormatInt(groupId, 10))
 //	fromData.Add("message", message)
-//	data := strings.NewReader(fromData.Encode())
+//	readerData := strings.NewReader(fromData.Encode())
 //	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/send_group_forward_msg")
-//	request, err := http.Post(addr, "application/x-www-form-urlencoded", data)
+//	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
 //	if err != nil {
-//		fmt.Println(err)
-//		return e
+//		return data, err
 //	}
-//	h.noData(request.Body)
+//	body, err := ioutil.ReadAll(request.Body)
+//	if err != nil {
+//		return data, err
+//	}
 //	defer func(Body io.ReadCloser) {
 //		err = Body.Close()
-//		fmt.Println(err)
+//		if err != nil {
+//			fmt.Println(err)
+//		}
 //	}(request.Body)
+//	err = json.Unmarshal(body, &data)
+//	if err != nil {
+//		return data, err
+//	}
+//	return data, nil
 //}
 
 // SendMsg 发送消息
@@ -1161,7 +1170,6 @@ func (h Handle) GetVersionInfo() (map[string]interface{}, error) {
 // SetRestart 重启 go-cqhttp
 func (h Handle) SetRestart(delay int) (map[string]interface{}, error) {
 	var data map[string]interface{}
-
 	fromData := make(url.Values)
 	fromData.Add("delay", strconv.Itoa(delay))
 	readerData := strings.NewReader(fromData.Encode())
@@ -1932,6 +1940,8 @@ func (h Handle) CheckUrlSafely(u string) (map[string]interface{}, error) {
 	}
 	return data, nil
 }
+
+// GetModelShow 获取在线机型
 func (h Handle) GetModelShow(model string) (map[string]interface{}, error) {
 	var data map[string]interface{}
 	fromData := make(url.Values)
