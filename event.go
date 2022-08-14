@@ -87,10 +87,12 @@ func (e *Event) filterStart(task Task) {
 				key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 				if key {
 					task.Run()
+					break
 				}
 			}
 			if fmt.Sprint(conditionKey) == task.Condition[t-1].Value {
 				task.Run()
+				break
 			}
 		}
 		if task.Condition[t-1].Regex == true {
