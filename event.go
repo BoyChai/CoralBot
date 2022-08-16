@@ -12,6 +12,7 @@ type Event struct {
 	//https://docs.go-cqhttp.org/event/#%E9%80%9A%E7%94%A8%E6%95%B0%E6%8D%AE
 	bodyData    string
 	PostType    string `json:"post_type"`
+	RequestType string `json:"request_type"`
 	MessageType string `json:"message_type"`
 	Time        int64  `json:"time"`
 	SelfID      int64  `json:"self_id"`
