@@ -68,7 +68,7 @@ type Event struct {
 
 // explain 解析命令函数
 func (e *Event) explain() {
-	for i := 0; i < cap(Tasks); i++ {
+	for i := 0; i < len(Tasks); i++ {
 		task := Tasks[i]
 		err := json.Unmarshal([]byte(e.bodyData), &e)
 		if err != nil {
@@ -80,10 +80,10 @@ func (e *Event) explain() {
 
 // 过滤
 func (e *Event) filterStart(task Task) {
-	for t := 1; t <= cap(task.Condition); t++ {
+	for t := 1; t <= len(task.Condition); t++ {
 		//fmt.Println(*task.Condition[t-1].Key.(reflect.TypeOf(task.Condition[t-1].Key))
 		conditionKey, _ := e.typeAsserts(task.Condition[t-1].Key)
-		if t == cap(task.Condition) {
+		if t == len(task.Condition) {
 			if task.Condition[t-1].Regex == true {
 				key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 				if key {
