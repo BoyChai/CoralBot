@@ -9,8 +9,8 @@ import (
 
 // Event 消息全部信息
 type Event struct {
-	//https://docs.go-cqhttp.org/event/#%E9%80%9A%E7%94%A8%E6%95%B0%E6%8D%AE
-	bodyData    string
+	//https://docs.go-cqhttp.org/event/
+	bodyData    []byte
 	PostType    string `json:"post_type"`
 	RequestType string `json:"request_type"`
 	MessageType string `json:"message_type"`
@@ -70,7 +70,7 @@ type Event struct {
 func (e *Event) explain() {
 	for i := 0; i < len(Tasks); i++ {
 		task := Tasks[i]
-		err := json.Unmarshal([]byte(e.bodyData), &e)
+		err := json.Unmarshal(e.bodyData, &e)
 		if err != nil {
 			fmt.Println("command parsing error,please feedback to the developer.error:", err)
 		}
@@ -88,22 +88,22 @@ func (e *Event) filterStart(task Task) {
 				key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 				if key {
 					task.Run()
-					break
+					return
 				}
 			}
 			if fmt.Sprint(conditionKey) == task.Condition[t-1].Value {
 				task.Run()
-				break
+				return
 			}
 		}
 		if task.Condition[t-1].Regex == true {
 			key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 			if key != true {
-				break
+				return
 			}
 		}
 		if fmt.Sprint(conditionKey) != task.Condition[t-1].Value {
-			break
+			return
 		}
 	}
 }
@@ -116,6 +116,6 @@ func (e *Event) typeAsserts(key interface{}) (interface{}, error) {
 	case *string:
 		return *key.(*string), nil
 	default:
-		return nil, errors.New("The current type is not supported. Please feedback through issue")
+		return nil, errors.New("the current type is not supported. please feedback through issue")
 	}
 }
