@@ -1,0 +1,4 @@
+[GIN-debug] POST   /                         --> github.com/BoyChai/CoralBot.RunCoralBot.func2 (2 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8080

@@ -10,7 +10,7 @@ import (
 // Event 消息全部信息
 type Event struct {
 	//https://docs.go-cqhttp.org/event/
-	bodyData    []byte
+	//bodyData    []byte
 	PostType    string `json:"post_type"`
 	RequestType string `json:"request_type"`
 	MessageType string `json:"message_type"`
@@ -67,10 +67,10 @@ type Event struct {
 }
 
 // explain 解析命令函数
-func (e *Event) explain() {
+func (e *Event) explain(bodyData []byte) {
 	for i := 0; i < len(Tasks); i++ {
 		task := Tasks[i]
-		err := json.Unmarshal(e.bodyData, &e)
+		err := json.Unmarshal(bodyData, &e)
 		if err != nil {
 			fmt.Println("command parsing error,please feedback to the developer.error:", err)
 		}
