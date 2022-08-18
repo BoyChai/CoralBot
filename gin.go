@@ -17,9 +17,11 @@ func RunCoralBot(port string, e *Event) {
 	// 创建gin对象
 	g := gin.New()
 	// 日志名称组装
-	logName := fmt.Sprintf("logs\\" + "CoralBot" + now.Format("20060102-150405") + ".log")
+	logName := fmt.Sprintf("logs/" + "CoralBot" + now.Format("20060102-150405") + ".log")
 	errs := os.Mkdir("logs", 0777)
-	fmt.Println(errs)
+	if errs != nil {
+		fmt.Println(errs)
+	}
 	logfile, _ := os.Create(logName)
 	gin.DefaultWriter = io.MultiWriter(logfile, os.Stdout)
 	g.Use(gin.LoggerWithFormatter(func(params gin.LogFormatterParams) string {
