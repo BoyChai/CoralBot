@@ -74,12 +74,15 @@ func (e *Event) explain(bodyData []byte) {
 		if err != nil {
 			fmt.Println("command parsing error,please feedback to the developer.error:", err)
 		}
-		e.filterStart(task)
+		status := e.filterStart(task)
+		if status == nil {
+			return
+		}
 	}
 }
 
 // 过滤
-func (e *Event) filterStart(task Task) {
+func (e *Event) filterStart(task Task) error {
 	for t := 1; t <= len(task.Condition); t++ {
 		//fmt.Println(*task.Condition[t-1].Key.(reflect.TypeOf(task.Condition[t-1].Key))
 		conditionKey, _ := e.typeAsserts(task.Condition[t-1].Key)
@@ -88,24 +91,25 @@ func (e *Event) filterStart(task Task) {
 				key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 				if key {
 					task.Run()
-					return
+					return nil
 				}
 			}
 			if fmt.Sprint(conditionKey) == task.Condition[t-1].Value {
 				task.Run()
-				return
+				return nil
 			}
 		}
 		if task.Condition[t-1].Regex == true {
 			key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 			if key != true {
-				return
+				return nil
 			}
 		}
 		if fmt.Sprint(conditionKey) != task.Condition[t-1].Value {
-			return
+			return nil
 		}
 	}
+	return errors.New("1")
 }
 
 // 类型断言
