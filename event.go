@@ -103,11 +103,11 @@ func (e *Event) filterStart(task Task) error {
 		if task.Condition[t-1].Regex == true {
 			key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 			if key != true {
-				return nil
+				return errors.New("1")
 			}
 		}
 		if fmt.Sprint(conditionKey) != task.Condition[t-1].Value {
-			return nil
+			return errors.New("1")
 		}
 	}
 	return errors.New("1")
