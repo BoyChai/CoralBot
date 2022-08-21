@@ -1,19 +1,8 @@
 #  CoralBot
 
-基于[go-cqhttp](https://docs.go-cqhttp.org/)的封装基于golang实现，并在go-cqhttp的对接上做了部分修改和扩展。文档目前还在持续完善中，后续将支持**微信**、**钉钉**、**Telegram** 的Bot相关开发。
-
-# 兼容性
-
-- [x] QQBot([go-cqhttp](https://docs.go-cqhttp.org/))
-- [ ] 微信Bot
-- [ ] 钉钉Bot
-- [ ] TelegramBot
-
-# QQBot
-
 ## 前言
 
-基于go-cqhttp的对接封装。
+基于[go-cqhttp](https://docs.go-cqhttp.org/)的封装基于golang实现，并在go-cqhttp的对接上做了部分修改和扩展。文档目前还在持续完善中，后续将支持**频道**的Bot相关开发。
 
 ## 行为
 
@@ -111,20 +100,3 @@
 - [x] 加群请求／邀请
 - [x] 其他客户端在线状态变更
 - [x] 精华消息
-
-
-# 微信Bot
-
-待开发
-
-# 钉钉Bot
-
-待开发
-
-# TelegramBot
-
-待开发
-
-# 其他
-
-文档待完善

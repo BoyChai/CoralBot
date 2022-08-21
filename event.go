@@ -36,13 +36,14 @@ type Event struct {
 		Name string `json:"name"`
 		Flag string `json:"flag"`
 	} `json:"anonymous"`
-	GroupID    int64  `json:"group_id"`
-	Message    string `json:"message"`
-	MessageSeq int    `json:"message_seq"`
-	UserID     int64  `json:"user_id"`
-	MessageID  int32  `json:"message_id"`
-	NoticeType string `json:"notice_type"`
-	File       struct {
+	GroupID       int64  `json:"group_id"`
+	Message       string `json:"message"`
+	MessageSeq    int    `json:"message_seq"`
+	UserID        int64  `json:"user_id"`
+	MessageID     int32  `json:"message_id"`
+	NoticeType    string `json:"notice_type"`
+	MetaEventType string `json:"meta_event_type"`
+	File          struct {
 		BusID int64  `json:"busid"`
 		ID    string `json:"id"`
 		Name  string `json:"name"`
