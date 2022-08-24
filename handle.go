@@ -1997,3 +1997,408 @@ func (h Handle) SetModelShow(model string, modelShow string) (map[string]interfa
 	}
 	return data, nil
 }
+
+//频道
+
+// GetGuildServiceProfile 获取频道系统内BOT的资料
+func (h Handle) GetGuildServiceProfile() (map[string]interface{}, error) {
+	var data map[string]interface{}
+	request, err := http.Get(fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_guild_service_profile"))
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// GetGuildList 获取频道列表
+func (h Handle) GetGuildList() (map[string]interface{}, error) {
+	var data map[string]interface{}
+	request, err := http.Get(fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_guild_list"))
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// GetGuildMetaByGuest 通过访客获取频道元数据
+func (h Handle) GetGuildMetaByGuest(guildID string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_guild_meta_by_guest")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// GetGuildChannelList 获取子频道列表
+func (h Handle) GetGuildChannelList(guildID string, noCache bool) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("no_cache", fmt.Sprint(noCache))
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_guild_channel_list")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// GetGuildMemberList 获取频道成员列表
+func (h Handle) GetGuildMemberList(guildID string, nextToken string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("next_token", fmt.Sprint(nextToken))
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_guild_member_list")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// GetGuildMemberProfile 单独获取频道成员信息
+func (h Handle) GetGuildMemberProfile(guildID string, userID string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("user_id", userID)
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_guild_member_profile")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// SendGuildChannelMsg 发送信息到子频道
+func (h Handle) SendGuildChannelMsg(guildID string, channelID string, message string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("channel_id", channelID)
+	fromData.Add("message", message)
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/send_guild_channel_msg")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// GetTopicChannelFeeds 获取话题频道帖子
+func (h Handle) GetTopicChannelFeeds(guildID string, channelID string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("channel_id", channelID)
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_topic_channel_feeds")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// DeleteGuildRole 删除频道角色
+func (h Handle) DeleteGuildRole(guildID string, roleID string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("role_id", roleID)
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/delete_guild_role")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// GetGuildMsg 获取频道消息
+func (h Handle) GetGuildMsg(messageID string, noCache bool) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("message_id", messageID)
+	fromData.Add("no_cache", fmt.Sprint(noCache))
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_guild_msg")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// GetGuildRoles 获取频道角色列表
+func (h Handle) GetGuildRoles(guildID string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/get_guild_roles")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// SetGuildMemberRole 设置用户在频道中的角色
+func (h Handle) SetGuildMemberRole(guildID string, set bool, roleID string, users string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("set", fmt.Sprint(set))
+	fromData.Add("role_id", roleID)
+	fromData.Add("users", users)
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/set_guild_member_role")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// UpdateGuildRole 设置用户在频道中的角色
+func (h Handle) UpdateGuildRole(guildID string, roleID string, name string, color string, indepedent bool) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("role_id", roleID)
+	fromData.Add("name", name)
+	fromData.Add("color", color)
+	fromData.Add("indepedent", fmt.Sprint(indepedent))
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/update_guild_role")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
+// CreateGuildRole 创建频道角色
+func (h Handle) CreateGuildRole(guildID string, name string, color string, independent bool, initialUsers string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	fromData := make(url.Values)
+	fromData.Add("guild_id", guildID)
+	fromData.Add("color", color)
+	fromData.Add("name", name)
+	fromData.Add("independent", fmt.Sprint(independent))
+	fromData.Add("initial_users", initialUsers)
+	readerData := strings.NewReader(fromData.Encode())
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/create_guild_role")
+	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	if err != nil {
+		return data, err
+	}
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return data, err
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(request.Body)
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
