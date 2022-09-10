@@ -222,3 +222,12 @@ Event.PostType
 ## Handle对象
 
 Handle的每一个对api封装的函数都会返回一个json对象和一个error，如果请求成功会返回一个json，json的内容可以参考[go-cqhttp的api文档](https://docs.go-cqhttp.org/api/)
+
+## 频道相关
+
+频道上报的信息，user_id和message_id和普通消息存在类型冲突，所以频道的这两个值的封装如下
+
+```
+Event.GuildUserID
+Event.GuildMessageID
+```

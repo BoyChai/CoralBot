@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/tidwall/gjson"
 	"regexp"
 )
 
@@ -38,14 +39,16 @@ type Event struct {
 		Name string `json:"name"`
 		Flag string `json:"flag"`
 	} `json:"anonymous"`
-	GroupID       int64  `json:"group_id"`
-	Message       string `json:"message"`
-	MessageSeq    int    `json:"message_seq"`
-	UserID        int64  `json:"user_id"`
-	MessageID     int32  `json:"message_id"`
-	NoticeType    string `json:"notice_type"`
-	MetaEventType string `json:"meta_event_type"`
-	File          struct {
+	GroupID        int64  `json:"group_id"`
+	Message        string `json:"message"`
+	MessageSeq     int    `json:"message_seq"`
+	UserID         int64  `json:"user_id"`
+	GuildUserID    string `json:"guild_user_id"`
+	MessageID      int32  `json:"message_id"`
+	GuildMessageID string `json:"guild_user_id"`
+	NoticeType     string `json:"notice_type"`
+	MetaEventType  string `json:"meta_event_type"`
+	File           struct {
 		BusID int64  `json:"busid"`
 		ID    string `json:"id"`
 		Name  string `json:"name"`
@@ -107,6 +110,10 @@ func (e *Event) explain(bodyData []byte) {
 	for i := 0; i < len(Tasks); i++ {
 		task := Tasks[i]
 		err := json.Unmarshal(bodyData, &e)
+		if e.MessageType == "guild" {
+			e.GuildUserID = gjson.Get(string(bodyData), "user_id").String()
+			e.GuildMessageID = gjson.Get(string(bodyData), "message_id").String()
+		}
 		if err != nil {
 			fmt.Println("command parsing error,please feedback to the developer.error:", err)
 		}
