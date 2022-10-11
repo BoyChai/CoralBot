@@ -1,14 +1,18 @@
 package CoralBot
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/dullgiulio/pingo"
+)
 
 // Task 创建一个任务
 type Task struct {
-	Condition []Condition
-	Run       func()
-	plugin    bool
-	RunName   string
-	info      PluginInfo
+	Condition   []Condition
+	Run         func()
+	plugin      bool
+	pingoServer *pingo.Plugin
+	RunName     string
+	info        PluginInfo
 }
 
 // Condition 触发条件

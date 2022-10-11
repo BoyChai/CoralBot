@@ -12,12 +12,17 @@ type PluginInfo struct {
 	Developer string
 	// 插件开发者邮箱
 	Email string
-	// 执行调用函数
-	RunName string
+	// 当前插件的任务id
+	Id int
 }
 
 // RequestData 存储Handle返回的值
 type RequestData struct {
-	data map[string]interface{}
-	err  error
+	Data map[string]interface{}
+	Err  error
+}
+
+type PluginTool struct {
+	H *Handle
+	E *Event
 }
