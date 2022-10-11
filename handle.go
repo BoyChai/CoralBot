@@ -22,6 +22,24 @@ type Msg struct {
 	AutoEscape bool
 }
 
+// Reply 快速回复
+func (h Handle) Reply(e Event, m Msg) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	var err error
+	switch e.MessageType {
+	case "group":
+		m.GroupId = e.GroupID
+		data, err = h.SendMsg(m)
+	case "private":
+		m.UserId = e.UserID
+		data, err = h.SendMsg(m)
+	case "guild":
+		data, err = h.SendGuildChannelMsg(e.GuildID, e.ChannelID, m.Message)
+	}
+	return data, err
+
+}
+
 // SendPrivateMsg 发送私聊消息
 func (h Handle) SendPrivateMsg(m Msg) (map[string]interface{}, error) {
 	var data map[string]interface{}
