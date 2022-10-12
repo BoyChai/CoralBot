@@ -45,7 +45,7 @@ type Event struct {
 	UserID         int64  `json:"user_id"`
 	GuildUserID    string `json:"guild_user_id"`
 	MessageID      int32  `json:"message_id"`
-	GuildMessageID string `json:"guild_user_id"`
+	GuildMessageID string `json:"guild_message_id"`
 	NoticeType     string `json:"notice_type"`
 	MetaEventType  string `json:"meta_event_type"`
 	File           struct {
