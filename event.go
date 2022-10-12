@@ -133,11 +133,23 @@ func (e *Event) filterStart(task Task) error {
 			if task.Condition[t-1].Regex == true {
 				key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 				if key {
+					if task.plugin {
+						task.pingoServer.Call(task.RunName, PluginTool{
+							E: e,
+						}, nil)
+						return nil
+					}
 					task.Run()
 					return nil
 				}
 			}
 			if fmt.Sprint(conditionKey) == task.Condition[t-1].Value {
+				if task.plugin {
+					task.pingoServer.Call(task.RunName, PluginTool{
+						E: e,
+					}, nil)
+					return nil
+				}
 				task.Run()
 				return nil
 			}
