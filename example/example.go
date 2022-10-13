@@ -21,8 +21,7 @@ func main() {
 	coral.NewTask(coral.Task{
 		Condition: c1,
 		Run: func() {
-			h.SendMsg(coral.Msg{
-				GroupId: e.GroupID,
+			h.Reply(e, coral.Msg{
 				Message: "你好",
 			})
 		},

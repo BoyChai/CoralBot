@@ -32,6 +32,13 @@ func RunCoralBot(port string, e *Event) {
 			e,
 		)
 	}))
+
+	// 加载插件
+	err := e.loadPlugin()
+	if err != nil {
+		fmt.Println("插件加载失败：", err)
+	}
+	// 接收上报
 	g.POST("/", func(c *gin.Context) {
 		dataReader := c.Request.Body
 		bodyData, err := ioutil.ReadAll(dataReader)
@@ -43,7 +50,7 @@ func RunCoralBot(port string, e *Event) {
 		//e.bodyData = bodyData
 		e.explain(bodyData)
 	})
-	err := g.Run(port)
+	err = g.Run(port)
 	if err != nil {
 		fmt.Printf("gin:%v", err)
 	}

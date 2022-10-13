@@ -106,6 +106,7 @@ type ChannelInfo struct {
 }
 
 // explain 解析命令函数
+// 将任务以此拿出来进行判断
 func (e *Event) explain(bodyData []byte) {
 	for i := 0; i < len(Tasks); i++ {
 		task := Tasks[i]
@@ -117,20 +118,32 @@ func (e *Event) explain(bodyData []byte) {
 		if err != nil {
 			fmt.Println("command parsing error,please feedback to the developer.error:", err)
 		}
-		status := e.filterStart(task)
-		if status == nil {
-			return
+		// 判断是否为插件
+		if task.plugin {
+			status := e.pluginFilterStart(task)
+			// 返回值如果等于空则代此事件已经达成了任务条件并已经执行
+			if status == nil {
+				return
+			}
+		} else {
+			status := e.filterStart(task)
+			if status == nil {
+				// 返回值如果等于空则代此事件已经达成了任务条件并已经执行
+				return
+			}
 		}
+
 	}
 }
 
 // 过滤
 func (e *Event) filterStart(task Task) error {
 	for t := 1; t <= len(task.Condition); t++ {
-		//fmt.Println(*task.Condition[t-1].Key.(reflect.TypeOf(task.Condition[t-1].Key))
 		conditionKey, _ := e.typeAsserts(task.Condition[t-1].Key)
+		// 如果这是此任务的最后一个判断
 		if t == len(task.Condition) {
 			if task.Condition[t-1].Regex == true {
+				// 正则判断
 				key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 				if key {
 					task.Run()
@@ -151,6 +164,54 @@ func (e *Event) filterStart(task Task) error {
 		if fmt.Sprint(conditionKey) != task.Condition[t-1].Value {
 			return errors.New("1")
 		}
+	}
+	return errors.New("1")
+}
+
+func (e *Event) pluginFilterStart(task Task) error {
+	var pts []Task
+	//fmt.Println("错误信息为", task.pingoServer)
+	err := task.pingoServer.Call("MyPlugin.GetPlugin", &e, &pts)
+	if err != nil {
+		fmt.Println("插件任务获取失败:插件名称", task.info.Name, "\n", "错误信息为:", err)
+	} else {
+		// 判断插件条件
+		// 依次判断任务
+		for ti := 0; ti < len(pts); ti++ {
+			// 依次判断任务条件
+			for ci := 0; ci < len(pts[ti].Condition); ci++ {
+				if ci+1 == len(pts[ti].Condition) {
+					// 正则判断
+					if pts[ti].Condition[ci].Regex == true {
+						key, _ := regexp.MatchString(pts[ti].Condition[ci].Value, fmt.Sprint(pts[ti].Condition[ci].Key))
+						if key {
+							err := task.pingoServer.Call(pts[ti].RunName, e, nil)
+							if err != nil {
+								fmt.Println("插件任务调用错误:", err)
+							}
+							return nil
+						}
+					}
+					if fmt.Sprint(pts[ti].Condition[ci].Key) == pts[ti].Condition[ci].Value {
+						err := task.pingoServer.Call(pts[ti].RunName, e, nil)
+						if err != nil {
+							fmt.Println("插件任务调用错误:", err)
+						}
+						return nil
+					}
+				}
+				if pts[ti].Condition[ci].Regex == true {
+					key, _ := regexp.MatchString(pts[ti].Condition[ci].Value, fmt.Sprint(pts[ti].Condition[ci].Key))
+					if key != true {
+						return errors.New("1")
+					}
+				}
+				if fmt.Sprint(pts[ti].Condition[ci].Key) != pts[ti].Condition[ci].Value {
+					return errors.New("1")
+				}
+			}
+		}
+		return errors.New("1")
 	}
 	return errors.New("1")
 }
