@@ -34,7 +34,7 @@ func RunCoralBot(port string, e *Event) {
 	}))
 
 	// 加载插件
-	err := loadPlugin()
+	err := e.loadPlugin()
 	if err != nil {
 		fmt.Println("插件加载失败：", err)
 	}

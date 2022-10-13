@@ -34,7 +34,7 @@ type PluginTool struct {
 }
 
 // 读取插件
-func loadPlugin() error {
+func (e *Event) loadPlugin() error {
 	// 读插件
 	files, err := ioutil.ReadDir("./plugin")
 	if err != nil {
@@ -47,32 +47,19 @@ func loadPlugin() error {
 			strings.Split(file.Name(), ".")
 			pingoServer := pingo.NewPlugin("tcp", "./plugin/"+file.Name())
 			pingoServer.Start()
-			defer pingoServer.Stop()
 			// 读取插件信息
 			var info PluginInfo
 			err := pingoServer.Call("MyPlugin.PluginInfo", "", &info)
 			if err != nil {
 				return err
 			}
-			// 读取插件任务
-			var t []Task
-			err = pingoServer.Call("MyPlugin.GetPlugin", "", &t)
-			if err != nil {
-				return err
-			}
-			for i := 0; i < len(t); i++ {
-				// 将信息加载到创建任务里面
-				t[i].info.Name = info.Name
-				t[i].info.Developer = info.Developer
-				t[i].info.Email = info.Email
-				t[i].info.Version = info.Version
-				t[i].info.Summary = info.Summary
-				t[i].info.Id = i
-				// 设置pingoServer
-				t[i].pingoServer = pingoServer
-				// 将任务加载到本地
-				Tasks = append(Tasks, t[i])
-			}
+			// 加载插件到本地
+			var t Task
+			t.info = info
+			t.pingoServer = pingoServer
+			t.plugin = true
+			Tasks = append(Tasks, t)
+			//e.UserID = 123
 		}
 		return nil
 	}
