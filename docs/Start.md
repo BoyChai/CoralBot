@@ -46,8 +46,7 @@ func main() {
 	coral.NewTask(coral.Task{
 		Condition: c1,
 		Run: func() {
-			h.SendMsg(coral.Msg{
-				GroupId: e.GroupID,
+			h.Reply(e, coral.Msg{
 				Message: "你好",
 			})
 		},
@@ -57,7 +56,7 @@ func main() {
 
 ```
 
-您可以通过以下方式运行代码`go run example.go`，运行之后可以在群聊里面发送hello即可收到回复。效果如下：
+您可以通过以下方式运行代码`go run example.go`，运行之后可以发送hello即可收到回复。效果如下：
 
 ![效果](img/20220813102834.png)
 
