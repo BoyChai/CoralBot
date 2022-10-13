@@ -1,6 +1,7 @@
 package CoralBot
 
 import (
+	"fmt"
 	"github.com/dullgiulio/pingo"
 	"io/ioutil"
 	"strings"
@@ -18,14 +19,6 @@ type PluginInfo struct {
 	Developer string
 	// 插件开发者邮箱
 	Email string
-	// 当前插件的任务id
-	Id int
-}
-
-// RequestData 存储Handle返回的值
-type RequestData struct {
-	Data map[string]interface{}
-	Err  error
 }
 
 type PluginTool struct {
@@ -59,9 +52,17 @@ func (e *Event) loadPlugin() error {
 			t.pingoServer = pingoServer
 			t.plugin = true
 			Tasks = append(Tasks, t)
-			//e.UserID = 123
 		}
-		return nil
+	}
+	for i := 0; i < len(Tasks); i++ {
+		if Tasks[i].plugin {
+			fmt.Println("===============已加载插件===============")
+			fmt.Println("插件名称：", Tasks[i].info.Name)
+			fmt.Println("插件版本：", Tasks[i].info.Version)
+			fmt.Println("插件概述：", Tasks[i].info.Summary)
+			fmt.Println("插件作者：", Tasks[i].info.Developer)
+			fmt.Println("作者邮箱：", Tasks[i].info.Email)
+		}
 	}
 	return nil
 }
