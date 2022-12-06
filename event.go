@@ -178,7 +178,7 @@ func (e *Event) filterStart(task Task) error {
 func (e *Event) pluginFilterStart(task Task) error {
 	var pts []Task
 	//fmt.Println("错误信息为", task.pingoServer)
-	err := task.pingoServer.Call("MyPlugin.GetPlugin", &e, &pts)
+	err := task.pingoServer.Call("Plugin.GetPlugin", &e, &pts)
 	if err != nil {
 		fmt.Println("插件任务获取失败:插件名称", task.info.Name, "\n", "错误信息为:", err)
 	} else {
@@ -193,7 +193,7 @@ func (e *Event) pluginFilterStart(task Task) error {
 						key, _ := regexp.MatchString(pts[ti].Condition[ci].Value, fmt.Sprint(pts[ti].Condition[ci].Key))
 						if key {
 							e.Other.RunName = pts[ti].RunName
-							err := task.pingoServer.Call("MyPlugin.Handles", &e, nil)
+							err := task.pingoServer.Call("Plugin.Handles", &e, nil)
 							e.Other.RunName = ""
 							if err != nil {
 								fmt.Println("插件任务调用错误:", err)
@@ -203,7 +203,7 @@ func (e *Event) pluginFilterStart(task Task) error {
 					}
 					if fmt.Sprint(pts[ti].Condition[ci].Key) == pts[ti].Condition[ci].Value {
 						e.Other.RunName = pts[ti].RunName
-						err := task.pingoServer.Call("MyPlugin.Handles", &e, nil)
+						err := task.pingoServer.Call("Plugin.Handles", &e, nil)
 						e.Other.RunName = ""
 						if err != nil {
 							fmt.Println("插件任务调用错误:", err)

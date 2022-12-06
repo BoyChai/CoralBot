@@ -42,7 +42,7 @@ func (e *Event) loadPlugin() error {
 			pingoServer.Start()
 			// 读取插件信息
 			var info PluginInfo
-			err := pingoServer.Call("MyPlugin.PluginInfo", "", &info)
+			err := pingoServer.Call("Plugin.PluginInfo", "", &info)
 			if err != nil {
 				return err
 			}
