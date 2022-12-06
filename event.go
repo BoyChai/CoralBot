@@ -84,6 +84,7 @@ type Event struct {
 	OldInfo     ChannelInfo `json:"old_info"`
 	NewInfo     ChannelInfo `json:"new_info"`
 	ChannelInfo ChannelInfo `json:"channel_info"`
+	Other       Other
 }
 
 // ChannelInfo 频道信息
@@ -103,6 +104,12 @@ type ChannelInfo struct {
 		SpeakFrequency int32  `json:"speak_frequency"`
 		SlowModeCircle int32  `json:"slow_mode_circle"`
 	} `json:"slow_modes"`
+}
+
+// Other 其他
+type Other struct {
+	// 运行插件
+	RunName string
 }
 
 // explain 解析命令函数
@@ -185,7 +192,9 @@ func (e *Event) pluginFilterStart(task Task) error {
 					if pts[ti].Condition[ci].Regex == true {
 						key, _ := regexp.MatchString(pts[ti].Condition[ci].Value, fmt.Sprint(pts[ti].Condition[ci].Key))
 						if key {
-							err := task.pingoServer.Call(pts[ti].RunName, e, nil)
+							e.Other.RunName = pts[ti].RunName
+							err := task.pingoServer.Call("MyPlugin.Handles", &e, nil)
+							e.Other.RunName = ""
 							if err != nil {
 								fmt.Println("插件任务调用错误:", err)
 							}
@@ -193,7 +202,9 @@ func (e *Event) pluginFilterStart(task Task) error {
 						}
 					}
 					if fmt.Sprint(pts[ti].Condition[ci].Key) == pts[ti].Condition[ci].Value {
-						err := task.pingoServer.Call(pts[ti].RunName, e, nil)
+						e.Other.RunName = pts[ti].RunName
+						err := task.pingoServer.Call("MyPlugin.Handles", &e, nil)
+						e.Other.RunName = ""
 						if err != nil {
 							fmt.Println("插件任务调用错误:", err)
 						}
