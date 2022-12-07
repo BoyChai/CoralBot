@@ -1,0 +1,7 @@
+handler:
+  - name: "all"
+    host: "127.0.0.1:5700"
+    agreement: "http"
+  - name: "demo"
+    host: "127.0.0.1:5700"
+    agreement: "http"
