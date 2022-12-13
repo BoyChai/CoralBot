@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/dullgiulio/pingo v0.0.0-20151111190101-8b1949e35b5a
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-ini/ini v1.67.0
 	github.com/tidwall/gjson v1.14.3
 )
 

@@ -32,11 +32,18 @@ func RunCoralBot(port string, e *Event) {
 			e,
 		)
 	}))
-
-	// 加载插件
-	err := e.loadPlugin()
+	//加载主配置文件
+	err := readCoralBotConfig()
 	if err != nil {
-		fmt.Println("插件加载失败：", err)
+		return
+	}
+	//同步配置文件配置
+	if Cfg.Plugin {
+		// 加载插件
+		err = e.loadPlugin()
+		if err != nil {
+			fmt.Println("插件加载失败：", err)
+		}
 	}
 	// 接收上报
 	g.POST("/", func(c *gin.Context) {
