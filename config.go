@@ -34,7 +34,7 @@ func readConfig() error {
 	if err != nil {
 		return err
 	}
-	plugin := c.Section("").Key("Plugin").MustBool(true)
+	plugin := c.Section("").Key("Plugin").MustBool(false)
 	Cfg.Plugin = plugin
 	return nil
 }
@@ -45,7 +45,7 @@ func defaultConfig() error {
 	if err != nil {
 		return err
 	}
-	defaultConfigData := "# 是否开启插件，默认开启。true or false\nPlugin=true\n"
+	defaultConfigData := "# 是否开启插件，默认开启。true or false\nPlugin=false\n"
 	_, err = c.Write([]byte(defaultConfigData))
 	if err != nil {
 		return err
