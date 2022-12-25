@@ -69,6 +69,7 @@ import (
 
 func main() {
 	var e CoralBot.Event
+	CoralBot.ReadConfig()
 	CoralBot.RunCoralBot(":8080", &e)
 }
 ```
