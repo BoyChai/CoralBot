@@ -32,15 +32,17 @@ func RunCoralBot(port string, e *Event) {
 			e,
 		)
 	}))
-	//加载主配置文件
-	err := readCoralBotConfig()
-	if err != nil {
-		return
+	//是否加载主配置文件
+	if read {
+		err := readCoralBotConfig()
+		if err != nil {
+			return
+		}
 	}
 	//同步配置文件配置
 	if Cfg.Plugin {
 		// 加载插件
-		err = e.loadPlugin()
+		err := e.loadPlugin()
 		if err != nil {
 			fmt.Println("插件加载失败：", err)
 		}
@@ -57,7 +59,7 @@ func RunCoralBot(port string, e *Event) {
 		//e.bodyData = bodyData
 		e.explain(bodyData)
 	})
-	err = g.Run(port)
+	err := g.Run(port)
 	if err != nil {
 		fmt.Printf("gin:%v", err)
 	}
