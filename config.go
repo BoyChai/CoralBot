@@ -10,6 +10,7 @@ import (
 var read = false
 
 type ConfigStruct struct {
+	Listen     int
 	Plugin     bool
 	PluginInfo bool
 }
@@ -50,6 +51,8 @@ func readConfig() error {
 	Cfg.Plugin = plugin
 	pluginInfo := c.Section("").Key("PluginInfo").MustBool(true)
 	Cfg.PluginInfo = pluginInfo
+	listen := c.Section("").Key("Listen").MustInt(8080)
+	Cfg.Listen = listen
 	return nil
 }
 
@@ -60,7 +63,7 @@ func defaultConfig() error {
 	if err != nil {
 		return err
 	}
-	defaultConfigData := "# 是否开启插件，默认开启。true or false\nPlugin=true\n# 加载插件时是否输出插件信息，默认开启。true or false\nPluginInfo=true"
+	defaultConfigData := "# CoralBot监听端口，默认为8080。\nListen=8080\n# 是否开启插件，默认开启。true or false\nPlugin=true\n# 加载插件时是否输出插件信息，默认开启。true or false\nPluginInfo=true"
 	_, err = c.Write([]byte(defaultConfigData))
 	if err != nil {
 		return err

@@ -68,7 +68,12 @@ func RunCoralBot(port string, e *Event) {
 		fmt.Println(err)
 		return
 	}
-	err = g.Run(port)
+	// 选中端口
+	if port == "" {
+		err = g.Run(fmt.Sprint(":", Cfg.Listen))
+	} else {
+		err = g.Run(port)
+	}
 	if err != nil {
 		fmt.Printf("gin:%v", err)
 	}
