@@ -16,6 +16,9 @@ func RunCoralBot(port string, e *Event) {
 	now := time.Now()
 	// 创建gin对象
 	g := gin.New()
+	// debug日志抹除
+	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
+	}
 	// 日志名称组装
 	logName := fmt.Sprintf("logs/" + "CoralBot" + now.Format("20060102-150405") + ".log")
 	errs := os.Mkdir("logs", 0777)
@@ -59,7 +62,13 @@ func RunCoralBot(port string, e *Event) {
 		//e.bodyData = bodyData
 		e.explain(bodyData)
 	})
-	err := g.Run(port)
+	// 设置代理忽略警告
+	err := g.SetTrustedProxies(nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = g.Run(port)
 	if err != nil {
 		fmt.Printf("gin:%v", err)
 	}
