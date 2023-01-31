@@ -1,0 +1,12 @@
+* {
+    margin: 0;
+    padding: 0
+}
+
+.fr {
+    float: right;
+}
+
+.fl{
+    float: left;
+}

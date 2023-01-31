@@ -1,0 +1,53 @@
+.main-box {
+    margin: 100px auto auto;
+    text-align: center;
+    height: 500px;
+    width: 700px;
+    border: 1px solid red;
+}
+
+/*管理栏*/
+.manager-box {
+    /*border: 1px solid red;*/
+    background-color: red;
+    height: 100%;
+    width: 150px
+}
+
+/*信息栏*/
+.content-box {
+    /*border: 1px solid rebeccapurple;*/
+    background-color:rebeccapurple;
+    height: 74%;
+    margin-top: 0;
+    margin-left: 150px;
+}
+.content-box .top {
+    background-color: aquamarine;
+    margin-top: 0;
+    height: 14%;
+    width: 100%;
+}
+/*列表栏*/
+.content-box .list {
+    /*border: 1px solid saddlebrown;*/
+    background-color: saddlebrown;
+    height: 86%;
+    width: 410px;
+}
+/*信息栏*/
+.content-box .info{
+    /*border: 1px solid blue;*/
+    background-color:blue;
+    height: 86%;
+    width: 140px;
+}
+
+/*管理栏*/
+.control-box {
+    /*border: 1px solid darkgreen;*/
+    background-color:darkgreen;
+    height: 26%;
+    margin-left: 150px;
+    margin-bottom: 0;
+}

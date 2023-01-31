@@ -62,6 +62,10 @@ func RunCoralBot(port string, e *Event) {
 		//e.bodyData = bodyData
 		e.explain(bodyData)
 	})
+
+	// webui
+	Control(g)
+
 	// 设置代理忽略警告
 	err := g.SetTrustedProxies(nil)
 	if err != nil {

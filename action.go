@@ -9,10 +9,10 @@ import (
 type Task struct {
 	Condition   []Condition
 	Run         func()
-	plugin      bool
+	Plugin      bool
 	pingoServer *pingo.Plugin
 	RunName     string
-	info        PluginInfo
+	Info        PluginInfo
 }
 
 // Condition 触发条件
@@ -26,13 +26,13 @@ var Tasks []Task
 
 // NewTask 创建一个动作
 func NewTask(task Task) {
-	task.plugin = false
+	task.Plugin = false
 	Tasks = append(Tasks, task)
 }
 
 // NewPluginTask 创建一个插件动作
 func NewPluginTask(task Task) {
-	task.plugin = true
+	task.Plugin = true
 	if task.RunName == "" {
 		fmt.Println("创建插件动作错误：RunName值为空")
 		return

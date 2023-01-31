@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-//PluginInfo 插件信息
+// PluginInfo 插件信息
 type PluginInfo struct {
 	// 插件名称
 	Name string
@@ -48,23 +48,23 @@ func (e *Event) loadPlugin() error {
 			}
 			// 加载插件到本地
 			var t Task
-			t.info = info
+			t.Info = info
 			t.pingoServer = pingoServer
-			t.plugin = true
+			t.Plugin = true
 			Tasks = append(Tasks, t)
 		}
 	}
 	if Cfg.PluginInfo {
 		sum := 0
 		for i := 0; i < len(Tasks); i++ {
-			if Tasks[i].plugin {
-				fmt.Println("Loading succeeded：", Tasks[i].info.Name)
+			if Tasks[i].Plugin {
+				fmt.Println("Loading succeeded：", Tasks[i].Info.Name)
 				fmt.Println("===============Plugin-Info===============")
-				fmt.Println("插件名称：", Tasks[i].info.Name)
-				fmt.Println("插件版本：", Tasks[i].info.Version)
-				fmt.Println("插件概述：", Tasks[i].info.Summary)
-				fmt.Println("插件作者：", Tasks[i].info.Developer)
-				fmt.Println("作者邮箱：", Tasks[i].info.Email)
+				fmt.Println("插件名称：", Tasks[i].Info.Name)
+				fmt.Println("插件版本：", Tasks[i].Info.Version)
+				fmt.Println("插件概述：", Tasks[i].Info.Summary)
+				fmt.Println("插件作者：", Tasks[i].Info.Developer)
+				fmt.Println("作者邮箱：", Tasks[i].Info.Email)
 				sum++
 			}
 			fmt.Println("=========================================")
@@ -73,8 +73,8 @@ func (e *Event) loadPlugin() error {
 	} else {
 		sum := 0
 		for i := 0; i < len(Tasks); i++ {
-			if Tasks[i].plugin {
-				fmt.Println("Loading succeeded:", Tasks[i].info.Name)
+			if Tasks[i].Plugin {
+				fmt.Println("Loading succeeded:", Tasks[i].Info.Name)
 				sum++
 			}
 		}

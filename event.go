@@ -126,7 +126,7 @@ func (e *Event) explain(bodyData []byte) {
 			fmt.Println("command parsing error,please feedback to the developer.error:", err)
 		}
 		// 判断是否为插件
-		if task.plugin {
+		if task.Plugin {
 			status := e.pluginFilterStart(task)
 			// 返回值如果等于空则代此事件已经达成了任务条件并已经执行
 			if status == nil {
@@ -180,7 +180,7 @@ func (e *Event) pluginFilterStart(task Task) error {
 	//fmt.Println("错误信息为", task.pingoServer)
 	err := task.pingoServer.Call("Plugin.GetPlugin", &e, &pts)
 	if err != nil {
-		fmt.Println("插件任务获取失败:插件名称", task.info.Name, "\n", "错误信息为:", err)
+		fmt.Println("插件任务获取失败:插件名称", task.Info.Name, "\n", "错误信息为:", err)
 	} else {
 		// 判断插件条件
 		// 依次判断任务
