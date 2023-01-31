@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-//PluginInfo 插件信息
+// PluginInfo 插件信息
 type PluginInfo struct {
 	// 插件名称
 	Name string
@@ -68,8 +68,8 @@ func (e *Event) loadPlugin() error {
 				sum++
 			}
 			fmt.Println("=========================================")
-			fmt.Println("CoralBot加载插件数量为：", sum)
 		}
+		fmt.Println("CoralBot加载插件数量为：", sum)
 	} else {
 		sum := 0
 		for i := 0; i < len(Tasks); i++ {
