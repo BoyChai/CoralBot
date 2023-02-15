@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"github.com/BoyChai/CoralBot/utils"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
+	"io"
 )
 
 func RunCoralBot(port string, e *Event, readConfig bool) {
-	// 空事件
+	// 重置事件的空事件
 	var init Event
+
 	// 创建gin对象
 	g := gin.New()
+
 	// 是否加载主配置文件
 	if readConfig {
 		err := readCoralBotConfig()
@@ -36,20 +38,16 @@ func RunCoralBot(port string, e *Event, readConfig bool) {
 	// 接收上报
 	g.POST("/", func(c *gin.Context) {
 		dataReader := c.Request.Body
-		bodyData, err := ioutil.ReadAll(dataReader)
+		bodyData, err := io.ReadAll(dataReader)
 		if err != nil {
 			fmt.Println(err)
 		}
 		*e = init
 		e.explain(bodyData)
 	})
-	// 设置代理忽略警告
-	err := g.SetTrustedProxies(nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	// 选中端口
+
+	// 选择端口并启动程序
+	var err error
 	if port == "" {
 		err = g.Run(fmt.Sprint(":", Cfg.Listen))
 	} else {

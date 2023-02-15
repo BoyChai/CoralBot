@@ -26,6 +26,12 @@ func LogOutput(g *gin.Engine, e *CoralBot.Event) (io.Writer, func(httpMethod, ab
 	logfile, _ := os.OpenFile("logs/"+logName, os.O_CREATE|os.O_APPEND, 0666)
 	DefaultWriter := io.MultiWriter(logfile, os.Stdout)
 
+	// 设置代理忽略警告
+	err = g.SetTrustedProxies(nil)
+	if err != nil {
+		fmt.Println("忽略代理警告错误:", err)
+	}
+
 	// 日志格式
 	g.Use(gin.LoggerWithFormatter(func(params gin.LogFormatterParams) string {
 		return fmt.Sprintf("[CoralBot] QQBot:%d 时间:%s 上报类型:%s 事件内容为:%+v\n",
