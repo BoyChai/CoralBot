@@ -26,5 +26,5 @@ func main() {
 			})
 		},
 	})
-	coral.RunCoralBot(":8080", &e)
+	coral.RunCoralBot(":8080", &e, false)
 }

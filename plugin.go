@@ -2,8 +2,9 @@ package CoralBot
 
 import (
 	"fmt"
+	"github.com/BoyChai/CoralBot/utils"
 	"github.com/dullgiulio/pingo"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -29,7 +30,7 @@ type PluginTool struct {
 // 读取插件
 func (e *Event) loadPlugin() error {
 	// 读插件
-	files, err := ioutil.ReadDir("./plugin")
+	files, err := os.ReadDir("./plugin")
 	if err != nil {
 		return err
 	}
@@ -54,7 +55,7 @@ func (e *Event) loadPlugin() error {
 			Tasks = append(Tasks, t)
 		}
 	}
-	if Cfg.PluginInfo {
+	if utils.Cfg.PluginInfo {
 		sum := 0
 		for i := 0; i < len(Tasks); i++ {
 			if Tasks[i].plugin {

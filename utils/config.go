@@ -1,14 +1,10 @@
-package CoralBot
+package utils
 
 import (
 	"fmt"
 	"github.com/go-ini/ini"
 	"os"
 )
-
-// 是否读取配置文件
-// Deprecated: 将在下个版本弃用
-var read = false
 
 type ConfigStruct struct {
 	Listen     int
@@ -17,12 +13,6 @@ type ConfigStruct struct {
 }
 
 var Cfg ConfigStruct
-
-// ReadConfig 读取配置文件开关
-// Deprecated: 将在下个版本弃用
-func ReadConfig() {
-	read = true
-}
 
 // 检查配置文件是否存在
 func checkConfig() error {
@@ -73,8 +63,8 @@ func defaultConfig() error {
 	return nil
 }
 
-// 读取配置文件总流程
-func readCoralBotConfig() error {
+// ReadCoralBotConfig 读取配置文件总流程
+func ReadCoralBotConfig() error {
 	err := checkConfig()
 	if err != nil {
 		fmt.Println("加载主配置文件失败：", err)

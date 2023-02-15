@@ -1,7 +1,0 @@
-//Gin Debug信息
-[GIN-debug] POST   /                         --> github.com/BoyChai/CoralBot.RunCoralBot.func2 (2 handlers)
-[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
-Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
-[GIN-debug] Listening and serving HTTP on :8080
-//CoralBot 日志格式如下
-//[CoralBot] QQBot:<机器人QQ号> 时间:<事件上传时间> 上报类型:<事件的上报类型> 事件内容为:<事件的具体内容>
