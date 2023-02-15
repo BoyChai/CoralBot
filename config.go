@@ -7,6 +7,7 @@ import (
 )
 
 // 是否读取配置文件
+// Deprecated: 将在下个版本弃用
 var read = false
 
 type ConfigStruct struct {
@@ -18,6 +19,7 @@ type ConfigStruct struct {
 var Cfg ConfigStruct
 
 // ReadConfig 读取配置文件开关
+// Deprecated: 将在下个版本弃用
 func ReadConfig() {
 	read = true
 }
