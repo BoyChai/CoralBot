@@ -1,4 +1,6 @@
-package task
+package CoralBot
+
+var Tasks []Task
 
 // Task 任务载体
 type Task struct {
@@ -11,4 +13,9 @@ type Condition struct {
 	Key   interface{}
 	Value string
 	Regex bool
+}
+
+// NewTask 创建任务
+func NewTask(task Task) {
+	Tasks = append(Tasks, task)
 }
