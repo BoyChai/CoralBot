@@ -1,9 +1,13 @@
 package bot
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/BoyChai/CoralBot/config"
 	"github.com/BoyChai/CoralBot/task"
 	"github.com/tidwall/gjson"
 	"regexp"
@@ -33,18 +37,30 @@ func (e *QQEvent) Explain(bodyData []byte) {
 
 // Explain DingDing任务解析器
 func (e *DingDingEvent) Explain(bodyData []byte) {
-	// 获取当前时间戳(毫秒)
-	now := time.Now()
-	nowTime := now.UnixNano() / 1e6
-	// 时间判断是否合法
-	if (e.header.timestamp-nowTime)/3600000 >= 1 {
-		return
-	}
 	err := json.Unmarshal(bodyData, &e)
 	if err != nil {
 		fmt.Println("command parsing error,please feedback to the developer.error:", err)
 	}
-
+	// 获取当前时间戳(毫秒)
+	now := time.Now()
+	nowTime := now.UnixNano() / 1e6
+	// 时间判断是否合法
+	if (config.Timestamp-nowTime)/3600000 >= 1 {
+		return
+	}
+	// 判断消息是否合法
+	if config.DingDingSignCheck {
+		secStr := fmt.Sprintf("%d\n%s", config.Timestamp, config.DingDingAppSecret)
+		hmac256 := hmac.New(sha256.New, []byte(config.DingDingAppSecret))
+		hmac256.Write([]byte(secStr))
+		result := hmac256.Sum(nil)
+		sign := base64.StdEncoding.EncodeToString(result)
+		if sign != config.Sign {
+			fmt.Println("[CoralBot]:机器人识别失败,或签名无效")
+			return
+		}
+	}
+	// 任务处理
 	Tasks := task.Tasks
 	for i := 0; i < len(Tasks); i++ {
 		t := Tasks[i]

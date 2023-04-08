@@ -2,10 +2,6 @@ package bot
 
 // DingDingEvent 整个事件信息
 type DingDingEvent struct {
-	header struct {
-		timestamp int64
-		sign      string
-	}
 	HandleID       int
 	ConversationId string `json:"conversationId"`
 	AtUsers        []struct {
@@ -31,12 +27,6 @@ type DingDingEvent struct {
 	} `json:"text"`
 	Msgtype string `json:"msgtype"`
 }
-
-// 消息签名信息
-//type whoSign struct {
-//	timestamp int64
-//	sign      string
-//}
 
 func (e DingDingEvent) GetType() string {
 	return "DingDing"
