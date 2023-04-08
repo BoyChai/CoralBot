@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	coral "github.com/BoyChai/CoralBot/task"
+	"github.com/BoyChai/CoralBot/task"
 	"github.com/tidwall/gjson"
 	"regexp"
+	"time"
 )
 
 // Explain qq任务解析器
 func (e *QQEvent) Explain(bodyData []byte) {
-	Tasks := coral.Tasks
+	Tasks := task.Tasks
 	for i := 0; i < len(Tasks); i++ {
 		t := Tasks[i]
 		err := json.Unmarshal(bodyData, &e)
@@ -30,8 +31,32 @@ func (e *QQEvent) Explain(bodyData []byte) {
 	}
 }
 
+// Explain DingDing任务解析器
+func (e *DingDingEvent) Explain(bodyData []byte) {
+	// 获取当前时间戳(毫秒)
+	now := time.Now()
+	nowTime := now.UnixNano() / 1e6
+	// 时间判断是否合法
+	if (e.header.timestamp-nowTime)/3600000 >= 1 {
+		return
+	}
+	err := json.Unmarshal(bodyData, &e)
+	if err != nil {
+		fmt.Println("command parsing error,please feedback to the developer.error:", err)
+	}
+
+	Tasks := task.Tasks
+	for i := 0; i < len(Tasks); i++ {
+		t := Tasks[i]
+		status := filterStart(t)
+		if status == nil {
+			return
+		}
+	}
+}
+
 // 任务执行器
-func filterStart(task coral.Task) error {
+func filterStart(task task.Task) error {
 	for t := 1; t <= len(task.Condition); t++ {
 		conditionKey, _ := typeAsserts(task.Condition[t-1].Key)
 		// 如果这是此任务的最后一个判断
