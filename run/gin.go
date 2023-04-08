@@ -9,9 +9,18 @@ import (
 	"strconv"
 )
 
-func Run(e bot.Event, port string) {
+func Run(e bot.Event, port string, readConfig bool) {
 	// 创建gin对象
 	g := gin.Default()
+
+	// 是否加载主配置文件
+	if readConfig {
+		err := config.ReadCoralBotConfig()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
 
 	// 接收上报
 	g.POST("/", func(c *gin.Context) {
@@ -33,5 +42,14 @@ func Run(e bot.Event, port string) {
 		}
 		e.Explain(bodyData)
 	})
-	g.Run(port)
+	// 选择端口并启动程序
+	var err error
+	if port == "" {
+		err = g.Run(fmt.Sprint(":", config.Cfg.Listen))
+	} else {
+		err = g.Run(port)
+	}
+	if err != nil {
+		fmt.Printf("gin:%v", err)
+	}
 }
