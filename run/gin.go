@@ -1,4 +1,4 @@
-package CoralBot
+package run
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package CoralBot
+package task
 
 var Tasks []Task
 

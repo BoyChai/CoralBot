@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/BoyChai/CoralBot/task"
+	coral "github.com/BoyChai/CoralBot/task"
 	"github.com/tidwall/gjson"
 	"regexp"
 )
 
 // Explain qq任务解析器
 func (e *QQEvent) Explain(bodyData []byte) {
-	Tasks := task.Tasks
+	Tasks := coral.Tasks
 	for i := 0; i < len(Tasks); i++ {
 		t := Tasks[i]
 		err := json.Unmarshal(bodyData, &e)
@@ -31,7 +31,7 @@ func (e *QQEvent) Explain(bodyData []byte) {
 }
 
 // 任务执行器
-func filterStart(task task.Task) error {
+func filterStart(task coral.Task) error {
 	for t := 1; t <= len(task.Condition); t++ {
 		conditionKey, _ := typeAsserts(task.Condition[t-1].Key)
 		// 如果这是此任务的最后一个判断
