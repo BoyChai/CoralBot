@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/BoyChai/CoralBot/bot"
 	"github.com/BoyChai/CoralBot/config"
+	"github.com/BoyChai/CoralBot/task"
 	"github.com/gin-gonic/gin"
 	"io"
 	"strconv"
@@ -19,6 +20,14 @@ func Run(e bot.Event, port string, readConfig bool) {
 		if err != nil {
 			fmt.Println(err)
 			return
+		}
+	}
+	//同步配置文件配置
+	if config.Cfg.Plugin {
+		// 加载插件
+		err := task.LoadPlugin()
+		if err != nil {
+			fmt.Println("插件加载失败：", err)
 		}
 	}
 

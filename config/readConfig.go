@@ -7,7 +7,9 @@ import (
 import "github.com/go-ini/ini"
 
 type ConfigStruct struct {
-	Listen int
+	Listen     int
+	Plugin     bool
+	PluginInfo bool
 }
 
 var Cfg ConfigStruct
@@ -37,6 +39,10 @@ func readConfig() error {
 	if err != nil {
 		return err
 	}
+	plugin := c.Section("").Key("plugin").MustBool(true)
+	Cfg.Plugin = plugin
+	pluginInfo := c.Section("").Key("plugin_info").MustBool(true)
+	Cfg.PluginInfo = pluginInfo
 	listen := c.Section("").Key("listen").MustInt(8080)
 	Cfg.Listen = listen
 	return nil
@@ -49,7 +55,7 @@ func defaultConfig() error {
 	if err != nil {
 		return err
 	}
-	defaultConfigData := "# CoralBot监听端口，默认为8080。\nlisten=8080\n"
+	defaultConfigData := "# CoralBot监听端口，默认为8080。\nlisten=8080\n# 是否开启插件，默认开启。true or false\nplugin=true\n# 加载插件时是否输出插件信息，默认开启。true or false\nplugin_info=true"
 	_, err = c.Write([]byte(defaultConfigData))
 	if err != nil {
 		return err

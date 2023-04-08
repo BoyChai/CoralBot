@@ -26,6 +26,7 @@ type DingDingEvent struct {
 		Content string `json:"content"`
 	} `json:"text"`
 	Msgtype string `json:"msgtype"`
+	Other   Other
 }
 
 func (e DingDingEvent) GetType() string {
@@ -34,4 +35,12 @@ func (e DingDingEvent) GetType() string {
 
 func (e DingDingEvent) GetDocs() string {
 	return "https://open.dingtalk.com/document/orgapp/robot-overview"
+}
+
+func (e *DingDingEvent) GetRunName() string {
+	return e.Other.RunName
+}
+
+func (e *DingDingEvent) SetRunName(runName string) {
+	e.Other.RunName = runName
 }

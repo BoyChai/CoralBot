@@ -460,3 +460,8 @@ func (h *DingDingHandle) QueryGroupMessages(robotCode string, conversationId str
 
 	return h.reqPost("https://api.dingtalk.com/v1.0/robot/groupMessages/query", reader)
 }
+
+// GetHandlerType 实现接口
+func (h DingDingHandle) GetHandlerType() string {
+	return "DingDIng"
+}

@@ -96,16 +96,16 @@ type ChannelInfo struct {
 	} `json:"slow_modes"`
 }
 
-// Other 其他
-type Other struct {
-	// 运行插件
-	RunName string
-}
-
 func (e QQEvent) GetType() string {
 	return "qq"
 }
 
 func (e QQEvent) GetDocs() string {
 	return "https://docs.go-cqhttp.org/"
+}
+func (e *QQEvent) GetRunName() string {
+	return e.Other.RunName
+}
+func (e *QQEvent) SetRunName(runName string) {
+	e.Other.RunName = runName
 }

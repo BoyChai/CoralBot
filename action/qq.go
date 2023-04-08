@@ -2420,3 +2420,8 @@ func (h QQHandle) CreateGuildRole(guildID string, name string, color string, ind
 	}
 	return data, nil
 }
+
+// GetHandlerType 实现接口
+func (h QQHandle) GetHandlerType() string {
+	return "QQ"
+}
