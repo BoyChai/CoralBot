@@ -2,19 +2,18 @@ package task
 
 import (
 	"fmt"
-	"github.com/dullgiulio/pingo"
 )
 
 var Tasks []Task
 
 // Task 任务载体
 type Task struct {
-	Condition   []Condition
-	Run         func()
-	Info        Info
-	PingoServer *pingo.Plugin
-	Plugin      bool
-	RunName     string
+	Condition []Condition
+	Run       func()
+	Info      Info
+	//PingoServer *pingo.Plugin
+	Plugin  bool
+	RunName string
 }
 
 // Condition 触发条件
