@@ -1,9 +1,5 @@
 package task
 
-import (
-	"fmt"
-)
-
 var Tasks []Task
 
 // Task 任务载体
@@ -11,9 +7,7 @@ type Task struct {
 	Condition []Condition
 	Run       func()
 	Info      Info
-	//PingoServer *pingo.Plugin
-	Plugin  bool
-	RunName string
+	Plugin    bool
 }
 
 // Condition 触发条件
@@ -31,9 +25,5 @@ func NewTask(task Task) {
 // NewPluginTask 创建插件任务
 func NewPluginTask(task Task) {
 	task.Plugin = true
-	if task.RunName == "" {
-		fmt.Println("创建插件动作错误：RunName值为空")
-		return
-	}
 	Tasks = append(Tasks, task)
 }
