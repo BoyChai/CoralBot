@@ -49,7 +49,7 @@ import (
 //}
 
 func RunPlugin(event bot.Event) {
-	SocketFile := "CoralBot.sock"
+	SocketFile := "./CoralBot.sock"
 	//conn, err := net.Dial("unix", config.SocketFile)
 	conn, err := net.Dial("unix", SocketFile)
 	if err != nil {

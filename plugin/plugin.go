@@ -6,6 +6,9 @@ import (
 	"github.com/BoyChai/CoralBot/task"
 	"net"
 	"os"
+	"os/exec"
+	"runtime"
+	"strings"
 )
 
 var Infos []task.Info
@@ -13,7 +16,7 @@ var Infos []task.Info
 var accepts []net.Conn
 
 func StartSocket() {
-	SocketFile := "CoralBot.sock"
+	SocketFile := "./plugin/CoralBot.sock"
 	// 删除已经存在的套接字文件
 	//if err := os.RemoveAll(config.SocketFile); err != nil {
 	if err := os.RemoveAll(SocketFile); err != nil {
@@ -28,6 +31,28 @@ func StartSocket() {
 		return
 	}
 	go receiveInformation(listener)
+}
+func StartPlugin() error {
+	// 读插件
+	files, err := os.ReadDir("./plugin")
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		// 识别插件
+		if strings.HasSuffix(file.Name(), ".coral") {
+			// 启动插件
+			var command *exec.Cmd
+			if runtime.GOOS == "windows" {
+				command = exec.Command("cmd", "/C", file.Name())
+			} else {
+				command = exec.Command(file.Name())
+			}
+			command.Dir = "./plugin"
+			command.Run()
+		}
+	}
+	return nil
 }
 
 func receiveInformation(listener net.Listener) {

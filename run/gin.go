@@ -30,6 +30,7 @@ func Run(e bot.Event, port string, readConfig bool) {
 		//	fmt.Println("插件加载失败：", err)
 		//}
 		plugin.StartSocket()
+		plugin.StartPlugin()
 	}
 
 	// 接收上报
