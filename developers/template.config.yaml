@@ -1,0 +1,12 @@
+handler:
+# qq的配置
+  - name: "all"
+    host: "192.168.1.1:5700"
+    agreement: "http"
+  - name: "demo"
+    host: "127.0.0.1:5700"
+    agreement: "http"
+# 钉钉的配置
+  - name: "demo2"
+    appKey: ""
+    appSecret: ""

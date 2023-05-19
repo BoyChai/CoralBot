@@ -22,7 +22,7 @@ func ReadInfo(network net.Conn) task.Info {
 	decoder := gob.NewDecoder(network)
 	err := decoder.Decode(&data)
 	if err != nil {
-		fmt.Println("插件读取错误,gob解码错误,err:", err)
+		fmt.Println("插件读取错误,gob解码错误或CoralBot已停止运行,err:", err)
 	}
 	return data
 }

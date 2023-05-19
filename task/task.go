@@ -6,8 +6,8 @@ var Tasks []Task
 type Task struct {
 	Condition []Condition
 	Run       func()
-	Info      Info
-	Plugin    bool
+	//Info      Info
+	//Plugin    bool
 }
 
 // Condition 触发条件
@@ -23,7 +23,7 @@ func NewTask(task Task) {
 }
 
 // NewPluginTask 创建插件任务
-func NewPluginTask(task Task) {
-	task.Plugin = true
-	Tasks = append(Tasks, task)
-}
+//func NewPluginTask(task Task) {
+//	task.Plugin = true
+//	Tasks = append(Tasks, task)
+//}
