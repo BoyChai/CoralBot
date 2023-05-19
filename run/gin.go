@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/BoyChai/CoralBot/bot"
 	"github.com/BoyChai/CoralBot/config"
-	"github.com/BoyChai/CoralBot/task"
+	"github.com/BoyChai/CoralBot/plugin"
 	"github.com/gin-gonic/gin"
 	"io"
 	"strconv"
@@ -22,13 +22,14 @@ func Run(e bot.Event, port string, readConfig bool) {
 			return
 		}
 	}
-	//同步配置文件配置
+	// 同步配置文件配置
 	if config.Cfg.Plugin {
 		// 加载插件
-		err := task.LoadPlugin()
-		if err != nil {
-			fmt.Println("插件加载失败：", err)
-		}
+		//err := task.LoadPlugin()
+		//if err != nil {
+		//	fmt.Println("插件加载失败：", err)
+		//}
+		plugin.StartSocket()
 	}
 
 	// 接收上报
@@ -50,6 +51,10 @@ func Run(e bot.Event, port string, readConfig bool) {
 			defer c.Request.Header.Clone()
 		}
 		e.Explain(bodyData)
+		// 广播给插件
+		if config.Cfg.Plugin {
+			plugin.BroadcastData(bodyData)
+		}
 	})
 	// 选择端口并启动程序
 	var err error
