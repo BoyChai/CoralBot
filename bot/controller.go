@@ -55,7 +55,8 @@ func (e *DingDingEvent) Explain(bodyData []byte) {
 		return
 	}
 	// 判断消息是否合法
-	if config.DingDingSignCheck {
+	//if config.DingDingSignCheck {
+	if config.Cfg.DingDingSignCheck {
 		secStr := fmt.Sprintf("%d\n%s", config.Timestamp, config.DingDingAppSecret)
 		hmac256 := hmac.New(sha256.New, []byte(config.DingDingAppSecret))
 		hmac256.Write([]byte(secStr))

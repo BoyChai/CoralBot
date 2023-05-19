@@ -7,9 +7,10 @@ import (
 import "github.com/go-ini/ini"
 
 type ConfigStruct struct {
-	Listen     int
-	Plugin     bool
-	PluginInfo bool
+	Listen            int
+	Plugin            bool
+	PluginInfo        bool
+	DingDingSignCheck bool
 }
 
 var Cfg ConfigStruct
@@ -39,12 +40,10 @@ func readConfig() error {
 	if err != nil {
 		return err
 	}
-	plugin := c.Section("").Key("plugin").MustBool(true)
-	Cfg.Plugin = plugin
-	pluginInfo := c.Section("").Key("plugin_info").MustBool(true)
-	Cfg.PluginInfo = pluginInfo
-	listen := c.Section("").Key("listen").MustInt(8080)
-	Cfg.Listen = listen
+	Cfg.Plugin = c.Section("").Key("plugin").MustBool(true)
+	Cfg.PluginInfo = c.Section("").Key("plugin_info").MustBool(true)
+	Cfg.Listen = c.Section("").Key("listen").MustInt(8080)
+	Cfg.DingDingSignCheck = c.Section("").Key("dingding_sign_check").MustBool(true)
 	return nil
 }
 
@@ -55,7 +54,7 @@ func defaultConfig() error {
 	if err != nil {
 		return err
 	}
-	defaultConfigData := "# CoralBot监听端口，默认为8080。\nlisten=8080\n# 是否开启插件，默认开启。true or false\nplugin=true\n# 加载插件时是否输出插件信息，默认开启。true or false\nplugin_info=true"
+	defaultConfigData := "# CoralBot监听端口，默认为8080。\nlisten=8080\n# 是否开启插件，默认开启。true or false\nplugin=true\n# 加载插件时是否输出插件信息，默认开启。true or false\nplugin_info=true\n# 钉钉是否检查上报信息的合法性，默认为true\ndingding_sign_check=true"
 	_, err = c.Write([]byte(defaultConfigData))
 	if err != nil {
 		return err
