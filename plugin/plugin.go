@@ -16,6 +16,17 @@ var Infos []task.Info
 var accepts []net.Conn
 
 func StartSocket() {
+	directory := "./plugin"
+	// 检查文件夹是否存在
+	if _, err := os.Stat(directory); os.IsNotExist(err) {
+		// 文件夹不存在，创建它
+		err := os.MkdirAll(directory, os.ModePerm)
+		if err != nil {
+			fmt.Println("无法创建插件文件夹:", err)
+			return
+		}
+	}
+
 	SocketFile := "./plugin/CoralBot.sock"
 	// 删除已经存在的套接字文件
 	//if err := os.RemoveAll(config.SocketFile); err != nil {
@@ -49,7 +60,7 @@ func StartPlugin() error {
 				command = exec.Command(file.Name())
 			}
 			command.Dir = "./plugin"
-			command.Run()
+			go command.Run()
 		}
 	}
 	return nil

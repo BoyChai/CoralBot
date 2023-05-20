@@ -57,6 +57,10 @@ func RunPlugin(event bot.Event) {
 		return
 	}
 	plugin.WriteInfo(information, conn)
-	data := plugin.ReadData(conn)
-	event.Explain(data)
+
+	// 等待播报
+	for {
+		data := plugin.ReadData(conn)
+		event.Explain(data)
+	}
 }
