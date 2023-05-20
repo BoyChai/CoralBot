@@ -61,6 +61,9 @@ func RunPlugin(event bot.Event) {
 	// 等待播报
 	for {
 		data := plugin.ReadData(conn)
+		if string(data) == "Heartbeat" {
+			continue
+		}
 		event.Explain(data)
 	}
 }

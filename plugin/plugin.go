@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
 )
 
 var Plugins []task.Plugin
@@ -42,6 +43,9 @@ func StartSocket() {
 		return
 	}
 	go receiveInformation(listener)
+
+	// 线程维护
+	go socketThreadMaintenance()
 }
 func StartPlugin() error {
 	// 读插件
@@ -92,6 +96,22 @@ func receiveInformation(listener net.Listener) {
 			fmt.Println("CoralBot加载插件数量为：", len(Plugins))
 		}
 
+	}
+}
+
+// 插件线程管理
+func socketThreadMaintenance() {
+	// 定时发送心跳包来确定插件连接的存活性
+	for {
+		time.Sleep(1 * time.Second)
+		for i, plugin := range Plugins {
+			err := WriteData([]byte("Heartbeat"), plugin.GetAccept())
+			if err != nil {
+				fmt.Println(plugin.Name + "插件已断开连接....")
+				Plugins[i] = Plugins[len(Plugins)-1]
+				Plugins = Plugins[:len(Plugins)-1]
+			}
+		}
 	}
 }
 
