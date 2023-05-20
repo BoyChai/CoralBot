@@ -11,9 +11,9 @@ import (
 	"strings"
 )
 
-var Infos []task.Info
+var Plugins []task.Plugin
 
-var accepts []net.Conn
+//var accepts []net.Conn
 
 func StartSocket() {
 	directory := "./plugin"
@@ -69,33 +69,34 @@ func StartPlugin() error {
 func receiveInformation(listener net.Listener) {
 	for {
 		conn, err := listener.Accept()
-		accepts = append(accepts, conn)
+		//accepts = append(accepts, conn)
 		if err != nil {
 			fmt.Println("Error accepting plugin connection:", err)
 			continue
 		}
-		info := ReadInfo(conn)
-		Infos = append(Infos, info)
+		plugin := ReadInfo(conn)
+		plugin.SetAccept(conn)
+		Plugins = append(Plugins, plugin)
 		if config.Cfg.PluginInfo {
-			fmt.Println("Loading succeeded：", info.Name)
+			fmt.Println("Loading succeeded：", plugin.Name)
 			fmt.Println("===============Plugin-Info===============")
-			fmt.Println("插件名称：", info.Name)
-			fmt.Println("插件版本：", info.Version)
-			fmt.Println("插件概述：", info.Summary)
-			fmt.Println("插件作者：", info.Developer)
-			fmt.Println("作者邮箱：", info.Email)
+			fmt.Println("插件名称：", plugin.Name)
+			fmt.Println("插件版本：", plugin.Version)
+			fmt.Println("插件概述：", plugin.Summary)
+			fmt.Println("插件作者：", plugin.Developer)
+			fmt.Println("作者邮箱：", plugin.Email)
 			fmt.Println("=========================================")
-			fmt.Println("CoralBot加载插件数量为：", len(Infos))
+			fmt.Println("CoralBot加载插件数量为：", len(Plugins))
 		} else {
-			fmt.Println("Loading succeeded:", info.Name)
-			fmt.Println("CoralBot加载插件数量为：", len(Infos))
+			fmt.Println("Loading succeeded:", plugin.Name)
+			fmt.Println("CoralBot加载插件数量为：", len(Plugins))
 		}
 
 	}
 }
 
 func BroadcastData(data []byte) {
-	for _, accept := range accepts {
-		WriteData(data, accept)
+	for _, plugin := range Plugins {
+		WriteData(data, plugin.GetAccept())
 	}
 }

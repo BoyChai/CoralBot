@@ -1,7 +1,9 @@
 package task
 
-// Info 插件信息
-type Info struct {
+import "net"
+
+// Plugin 插件信息
+type Plugin struct {
 	// 插件类型
 	Type PluginType
 	//Type string
@@ -15,6 +17,18 @@ type Info struct {
 	Developer string
 	// 插件开发者邮箱
 	Email string
+	// 插件的连接
+	accept net.Conn
+}
+
+// SetAccept 设置插件连接
+func (p *Plugin) SetAccept(conn net.Conn) {
+	p.accept = conn
+}
+
+// GetAccept 获取插件连接
+func (p *Plugin) GetAccept() net.Conn {
+	return p.accept
 }
 
 type PluginType string

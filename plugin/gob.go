@@ -8,7 +8,7 @@ import (
 )
 
 // WriteInfo 传输
-func WriteInfo(data task.Info, network net.Conn) {
+func WriteInfo(data task.Plugin, network net.Conn) {
 	encoder := gob.NewEncoder(network)
 	err := encoder.Encode(data)
 	if err != nil {
@@ -17,8 +17,8 @@ func WriteInfo(data task.Info, network net.Conn) {
 }
 
 // ReadInfo 接收
-func ReadInfo(network net.Conn) task.Info {
-	var data task.Info
+func ReadInfo(network net.Conn) task.Plugin {
+	var data task.Plugin
 	decoder := gob.NewDecoder(network)
 	err := decoder.Decode(&data)
 	if err != nil {
@@ -28,12 +28,14 @@ func ReadInfo(network net.Conn) task.Info {
 }
 
 // WriteData 传输
-func WriteData(data []byte, network net.Conn) {
+func WriteData(data []byte, network net.Conn) error {
 	encoder := gob.NewEncoder(network)
 	err := encoder.Encode(data)
 	if err != nil {
-		fmt.Println("插件gob编码错误,err:", err)
+		fmt.Println("插件gob编码错误或已断开连接,err:", err)
+		return err
 	}
+	return nil
 }
 
 // ReadData 接收
