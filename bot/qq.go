@@ -97,7 +97,7 @@ type ChannelInfo struct {
 }
 
 func (e QQEvent) GetType() string {
-	return "qq"
+	return "QQ"
 }
 
 func (e QQEvent) GetDocs() string {
