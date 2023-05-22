@@ -4,13 +4,6 @@ import (
 	"github.com/BoyChai/CoralBot/task"
 )
 
-//type Handle struct {
-//	name string
-//	//run  func(event *bot.Event) error
-//	//run func(event *bot.QQEvent) error
-//	run func(event interface{}) error
-//}
-
 type pluginConfig struct {
 	Handler []Handler `yaml:"handler"`
 }
@@ -25,20 +18,5 @@ type Handler struct {
 
 var handler Handler
 
-// var event bot.Event
-// var event bot.QQEvent
-//var event interface{}
-
-//var qqEvent bot.QQEvent
-
-//var dingDingEvent bot.DingDingEvent
-
-//var qqHan action.QQHandle
-
-//var dingDingHan action.DingDingHandle
-
-var information task.Info
-
-//type Plugin struct{}
-
-//var handles []Handle
+// 插件的信息
+var information task.Plugin

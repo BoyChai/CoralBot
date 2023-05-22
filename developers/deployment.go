@@ -77,7 +77,7 @@ func GetConfigDingDingHandler() *action.DingDingHandle {
 //	return handles
 //}
 
-func SetInfo(info task.Info) {
+func SetInfo(info task.Plugin) {
 	information = info
 }
 
