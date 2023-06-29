@@ -17,15 +17,15 @@ import (
 // Explain qq任务解析器
 func (e *QQEvent) Explain(bodyData []byte) {
 	Tasks := task.Tasks
+	err := json.Unmarshal(bodyData, &e)
+	if err != nil {
+		fmt.Println("command parsing error,please feedback to the developer.error:", err)
+	}
 	for i := 0; i < len(Tasks); i++ {
 		t := Tasks[i]
-		err := json.Unmarshal(bodyData, &e)
 		if e.MessageType == "guild" {
 			e.GuildUserID = gjson.Get(string(bodyData), "user_id").String()
 			e.GuildMessageID = gjson.Get(string(bodyData), "message_id").String()
-		}
-		if err != nil {
-			fmt.Println("command parsing error,please feedback to the developer.error:", err)
 		}
 		//if t.Plugin {
 		//	status := pluginFilterStart(t, e)
