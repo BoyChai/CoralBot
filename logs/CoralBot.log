@@ -1,3 +1,0 @@
-[GIN-debug] Listening and serving HTTP on :8080
-//CoralBot 日志格式如下
-//[CoralBot] QQBot:<机器人QQ号> 时间:<事件上传时间> 上报类型:<事件的上报类型> 事件内容为:<事件的具体内容>
