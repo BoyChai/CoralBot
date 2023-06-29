@@ -1,5 +1,11 @@
 package bot
 
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"time"
+)
+
 // DingDingEvent 整个事件信息
 type DingDingEvent struct {
 	HandleID       int
@@ -43,4 +49,12 @@ func (e *DingDingEvent) GetRunName() string {
 
 func (e *DingDingEvent) SetRunName(runName string) {
 	e.Other.RunName = runName
+}
+
+func (e *DingDingEvent) GetLogOut(params gin.LogFormatterParams) string {
+	logout := "[CoralBot] DingDingBot:"
+	logout += fmt.Sprintf(" 时间: %s 事件内容: %+v\n",
+		params.TimeStamp.Format(time.RFC3339),
+		e)
+	return logout
 }

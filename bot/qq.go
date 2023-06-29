@@ -1,5 +1,11 @@
 package bot
 
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"time"
+)
+
 type QQEvent struct {
 	//https://docs.go-cqhttp.org/event/
 	PostType    string `json:"post_type"`
@@ -108,4 +114,12 @@ func (e *QQEvent) GetRunName() string {
 }
 func (e *QQEvent) SetRunName(runName string) {
 	e.Other.RunName = runName
+}
+
+func (e *QQEvent) GetLogOut(params gin.LogFormatterParams) string {
+	logout := "[CoralBot] QQBot:"
+	logout += fmt.Sprintf(" 时间: %s 事件内容: %+v\n",
+		params.TimeStamp.Format(time.RFC3339),
+		e)
+	return logout
 }

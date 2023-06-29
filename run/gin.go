@@ -13,7 +13,7 @@ import (
 
 func Run(e bot.Event, port string, readConfig bool) {
 	// 创建gin对象
-	g := gin.Default()
+	g := gin.New()
 
 	// 是否加载主配置文件
 	if readConfig {
@@ -35,15 +35,9 @@ func Run(e bot.Event, port string, readConfig bool) {
 	}
 
 	// 日志位置和debug日志抹除，并指定日志输出格式
-	gin.DefaultWriter, gin.DebugPrintRouteFunc = logOutput(g, e.GetType())
-	g.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-		return fmt.Sprintf("[CoralBot] %s | %s | %s | %s ",
-			param.Method,
-			param.Path,
-			param.StatusCode,
-			param.Latency,
-		)
-	}))
+	//gin.DefaultWriter, gin.DebugPrintRouteFunc = logOutput2(g, e)
+	gin.DefaultWriter, gin.DebugPrintRouteFunc = logOutput(g, e)
+
 	// 接收上报
 	g.POST("/", func(c *gin.Context) {
 		var err error
@@ -81,7 +75,7 @@ func Run(e bot.Event, port string, readConfig bool) {
 }
 
 // 日志输出格式
-func logOutput(g *gin.Engine, bodyType string) (io.Writer, func(httpMethod, absolutePath, handlerName string, nuHandlers int)) {
+func logOutput(g *gin.Engine, e bot.Event) (io.Writer, func(httpMethod, absolutePath, handlerName string, nuHandlers int)) {
 	// 日志名称
 	var logName = "CoralBot.log"
 	// 判断日志目录是否存在
@@ -103,40 +97,16 @@ func logOutput(g *gin.Engine, bodyType string) (io.Writer, func(httpMethod, abso
 	if err != nil {
 		fmt.Println("忽略代理警告错误:", err)
 	}
-
-	g.Use(func(context *gin.Context) {
-		switch bodyType {
-		case "DingDing":
-			fmt.Println("[CoralBot] DingDingBot:")
-		case "QQ":
-			fmt.Println("[CoralBot] QQBot:")
-		default:
-			fmt.Println("[CoralBot]: " + bodyType + "类型识别上报出现错误")
-		}
-	})
-
-	// 日志格式
-	//g.Use(gin.LoggerWithFormatter(func(params gin.LogFormatterParams) string {
-	//	switch e.(type) {
-	//	case *bot.QQEvent:
-	//		return fmt.Sprintf("[CoralBot] QQBot:%d 时间:%s 上报类型:%s 事件内容为:%+v\n",
-	//			e.(*bot.QQEvent).SelfID,
-	//			params.TimeStamp.Format(time.RFC3339),
-	//			e.(*bot.QQEvent).PostType,
-	//			//e.(*bot.QQEvent).Message,
-	//			e.(*bot.QQEvent),
-	//		)
-	//	case *bot.DingDingEvent:
-	//		return fmt.Sprintf("[CoralBot] DingDingBot:%d 时间:%s 上报类型:%s 事件内容为:%+v\n",
-	//			e.(*bot.DingDingEvent).ChatbotCorpId,
-	//			params.TimeStamp.Format(time.RFC3339),
-	//			e.(*bot.DingDingEvent).Msgtype,
-	//		)
-	//	default:
-	//		return fmt.Sprintf("[CoralBot] Log: 未知上报类型")
-	//	}
-	//
-	//}))
-
+	g.Use(gin.LoggerWithFormatter(func(params gin.LogFormatterParams) string {
+		return fmt.Sprintf(e.GetLogOut(params))
+		//switch e.GetType() {
+		//case "DingDing":
+		//	return fmt.Sprintf("[CoralBot] DingDingBot:")
+		//case "QQ":
+		//	return fmt.Sprintf("[CoralBot] QQBot: %s")
+		//default:
+		//	return fmt.Sprintf("[CoralBot]: " + e.GetType() + "类型识别上报出现错误")
+		//}
+	}))
 	return DefaultWriter, func(httpMethod, absolutePath, handlerName string, nuHandlers int) {}
 }
