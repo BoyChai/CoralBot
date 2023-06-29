@@ -18,21 +18,21 @@ type DingDingHandle struct {
 	accessToken string
 }
 
-var AllHandle []*DingDingHandle
+//var AllHandle []*DingDingHandle
 
 // NewDingDingHandle 创建动作执行器
-func NewDingDingHandle(appKey string, appSecret string) (*DingDingHandle, error) {
-	var h DingDingHandle
-	h.id = len(AllHandle)
-	h.AppKey = appKey
-	h.AppSecret = appSecret
-	err := h.getAccessToken()
-	if err != nil {
-		return nil, err
-	}
-	AllHandle = append(AllHandle, &h)
-	return &h, err
-}
+//func NewDingDingHandle(appKey string, appSecret string) (*DingDingHandle, error) {
+//	var h DingDingHandle
+//	h.id = len(AllHandle)
+//	h.AppKey = appKey
+//	h.AppSecret = appSecret
+//	err := h.getAccessToken()
+//	if err != nil {
+//		return nil, err
+//	}
+//	AllHandle = append(AllHandle, &h)
+//	return &h, err
+//}
 
 // GetID 获取当前命令执行器的id
 func (h *DingDingHandle) GetID() int {
