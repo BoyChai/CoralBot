@@ -51,10 +51,6 @@ func readConfig() (Handler, error) {
 	return Handler{}, errors.New("未读取到配置文件")
 }
 
-//	func GetEvent() interface{} {
-//		return &event
-//	}
-
 func GetConfigQQHandler() *action.QQHandle {
 	return &action.QQHandle{
 		Host:      handler.Host,
@@ -69,14 +65,6 @@ func GetConfigDingDingHandler() *action.DingDingHandle {
 	}
 }
 
-//func GetHandler() interface{} {
-//	return &han
-//}
-
-//func GetHandlers() []Handle {
-//	return handles
-//}
-
 func SetInfo(info task.Plugin) {
 	information = info
 }
@@ -86,18 +74,3 @@ func NewTask(t task.Task) {
 	//task.NewPluginTask(t)
 	task.Tasks = append(task.Tasks, t)
 }
-
-// func NewHandles(name string, run func(event *bot.Event) error) {
-// func NewHandles(name string, run func(event *bot.QQEvent) error) {
-//func NewHandles(name string, run func(event interface{}) error) {
-//	handles = append(handles, Handle{
-//		name: name,
-//		run:  run,
-//	})
-//}
-
-//func BuildPlugin() {
-//	plugin := &Plugin{}
-//	pingo.Register(plugin)
-//	pingo.Run()
-//}

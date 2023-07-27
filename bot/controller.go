@@ -27,12 +27,6 @@ func (e *QQEvent) Explain(bodyData []byte) {
 			e.GuildUserID = gjson.Get(string(bodyData), "user_id").String()
 			e.GuildMessageID = gjson.Get(string(bodyData), "message_id").String()
 		}
-		//if t.Plugin {
-		//	status := pluginFilterStart(t, e)
-		//	if status == nil {
-		//		return
-		//	}
-		//}
 		status := filterStart(t)
 		if status == nil {
 			// 返回值如果等于空则代此事件已经达成了任务条件并已经执行
@@ -71,12 +65,6 @@ func (e *DingDingEvent) Explain(bodyData []byte) {
 	Tasks := task.Tasks
 	for i := 0; i < len(Tasks); i++ {
 		t := Tasks[i]
-		//if t.Plugin {
-		//	status := pluginFilterStart(t, e)
-		//	if status == nil {
-		//		return
-		//	}
-		//}
 		status := filterStart(t)
 		if status == nil {
 			return
@@ -115,59 +103,6 @@ func filterStart(task task.Task) error {
 	}
 	return errors.New("1")
 }
-
-// 插件任务执行器
-//func pluginFilterStart(t task.Task, e Event) error {
-//	//var pts []Task
-//	var pts []task.Task
-//	err := t.PingoServer.Call("Plugin.GetPlugin", &e, &pts)
-//	if err != nil {
-//		fmt.Println("插件任务获取失败:插件名称", t.Info.Name, "\n", "错误信息为:", err)
-//	} else {
-//		// 判断插件条件
-//		// 依次判断任务
-//		for ti := 0; ti < len(pts); ti++ {
-//			// 依次判断任务条件
-//			for ci := 0; ci < len(pts[ti].Condition); ci++ {
-//				if ci+1 == len(pts[ti].Condition) {
-//					// 正则判断
-//					if pts[ti].Condition[ci].Regex == true {
-//						key, _ := regexp.MatchString(pts[ti].Condition[ci].Value, fmt.Sprint(pts[ti].Condition[ci].Key))
-//						if key {
-//							e.SetRunName(pts[ti].RunName)
-//							err := t.PingoServer.Call("Plugin.Handles", &e, nil)
-//							e.SetRunName("")
-//							if err != nil {
-//								fmt.Println("插件任务调用错误:", err)
-//							}
-//							return nil
-//						}
-//					}
-//					if fmt.Sprint(pts[ti].Condition[ci].Key) == pts[ti].Condition[ci].Value {
-//						e.SetRunName(pts[ti].RunName)
-//						err := t.PingoServer.Call("Plugin.Handles", &e, nil)
-//						e.SetRunName("")
-//						if err != nil {
-//							fmt.Println("插件任务调用错误:", err)
-//						}
-//						return nil
-//					}
-//				}
-//				if pts[ti].Condition[ci].Regex == true {
-//					key, _ := regexp.MatchString(pts[ti].Condition[ci].Value, fmt.Sprint(pts[ti].Condition[ci].Key))
-//					if key != true {
-//						return errors.New("1")
-//					}
-//				}
-//				if fmt.Sprint(pts[ti].Condition[ci].Key) != pts[ti].Condition[ci].Value {
-//					return errors.New("1")
-//				}
-//			}
-//		}
-//		return errors.New("1")
-//	}
-//	return errors.New("1")
-//}
 
 // 类型断言
 func typeAsserts(key interface{}) (interface{}, error) {

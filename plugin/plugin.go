@@ -30,7 +30,6 @@ func StartSocket() {
 
 	SocketFile := "./plugin/CoralBot.sock"
 	// 删除已经存在的套接字文件
-	//if err := os.RemoveAll(config.SocketFile); err != nil {
 	if err := os.RemoveAll(SocketFile); err != nil {
 		fmt.Println("removing plugin socket file:", err)
 		return
@@ -73,7 +72,6 @@ func StartPlugin() error {
 func receiveInformation(listener net.Listener) {
 	for {
 		conn, err := listener.Accept()
-		//accepts = append(accepts, conn)
 		if err != nil {
 			fmt.Println("Error accepting plugin connection:", err)
 			continue

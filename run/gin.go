@@ -25,17 +25,11 @@ func Run(e bot.Event, port string, readConfig bool) {
 	}
 	// 同步配置文件配置
 	if config.Cfg.Plugin {
-		// 加载插件
-		//err := task.LoadPlugin()
-		//if err != nil {
-		//	fmt.Println("插件加载失败：", err)
-		//}
 		plugin.StartSocket()
 		plugin.StartPlugin()
 	}
 
 	// 日志位置和debug日志抹除，并指定日志输出格式
-	//gin.DefaultWriter, gin.DebugPrintRouteFunc = logOutput2(g, e)
 	gin.DefaultWriter, gin.DebugPrintRouteFunc = logOutput(g, e)
 
 	// 接收上报
