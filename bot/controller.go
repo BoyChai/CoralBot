@@ -16,6 +16,7 @@ import (
 
 // Explain qq任务解析器
 func (e *QQEvent) Explain(bodyData []byte) {
+	*e = QQEvent{}
 	Tasks := task.Tasks
 	err := json.Unmarshal(bodyData, &e)
 	if err != nil {
@@ -37,6 +38,7 @@ func (e *QQEvent) Explain(bodyData []byte) {
 
 // Explain DingDing任务解析器
 func (e *DingDingEvent) Explain(bodyData []byte) {
+	*e = DingDingEvent{}
 	err := json.Unmarshal(bodyData, &e)
 	if err != nil {
 		fmt.Println("command parsing error,please feedback to the developer.error:", err)
