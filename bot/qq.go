@@ -3,7 +3,6 @@ package bot
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 type QQEvent struct {
@@ -118,8 +117,74 @@ func (e *QQEvent) SetRunName(runName string) {
 
 func (e *QQEvent) GetLogOut(params gin.LogFormatterParams) string {
 	logout := "[CoralBot] QQBot:"
-	logout += fmt.Sprintf(" 时间: %s 事件内容: %+v\n",
-		params.TimeStamp.Format(time.RFC3339),
-		e)
+	//logout += fmt.Sprintf(" 时间: %s 事件内容: %+v\n",
+	//	params.TimeStamp.Format(time.RFC3339),
+	//	e)
+	postType, postMsg := e.getPostInfo()
+	logout += fmt.Sprintf(" 时间: %s 事件类型: %v 事件内容:\"%v\"\n",
+		//params.TimeStamp.Format(time.RFC3339),
+		params.TimeStamp.Format("2006-01-02 15:04:05"),
+		postType,
+		postMsg)
 	return logout
+}
+
+func (e *QQEvent) getPostInfo() (postType string, postMsg string) {
+	switch e.PostType {
+	case "message":
+		return "消息", e.getMsgInfo()
+	case "message_sent":
+		return "消息发送", ""
+	case "request":
+		return "请求", e.Comment
+	case "notice":
+		return "通知", e.getNoticeInfo()
+	case "meta_event":
+		return "元事件", "go-cq心跳包"
+	default:
+		return fmt.Sprintf("未知的消息类型(%v)", e.PostType), ""
+	}
+}
+
+func (e *QQEvent) getMsgInfo() (info string) {
+	switch e.MessageType {
+	case "private":
+		return fmt.Sprintf("收到%v(%v)的私信,私信内容为: %v", e.Sender.Nickname, e.Sender.UserID, e.Message)
+	case "group":
+		return fmt.Sprintf("收到来自%v群聊%v(%v)的消息,消息内容为: %v", e.GroupID, e.Sender.Nickname, e.Sender.UserID, e.Message)
+	}
+	return ""
+}
+
+func (e *QQEvent) getNoticeInfo() (info string) {
+	switch e.NoticeType {
+	case "group_upload":
+		return "群文件上传"
+	case "group_admin":
+		return "群管理员变更"
+	case "group_decrease":
+		return "群成员减少"
+	case "group_increase":
+		return "群成员增加"
+	case "group_ban":
+		return "群成员禁言"
+	case "friend_add":
+		return "好友添加"
+	case "group_recall":
+		return "群消息撤回"
+	case "friend_recall":
+		return "好友消息撤回"
+	case "group_card":
+		return "群名片变更"
+	case "offline_file":
+		return "离线文件上传"
+	case "client_status":
+		return "客户端状态变更"
+	case "essence":
+		return "精华消息"
+	case "notify":
+		return "系统通知"
+	default:
+		return fmt.Sprintf("未知的通知类型(%v)", e.NoticeType)
+	}
 }
