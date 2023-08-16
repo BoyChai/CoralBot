@@ -60,7 +60,7 @@ func StartPlugin() error {
 			if runtime.GOOS == "windows" {
 				command = exec.Command("cmd", "/C", file.Name())
 			} else {
-				command = exec.Command(file.Name())
+				command = exec.Command(fmt.Sprint("./", file.Name()))
 			}
 			command.Dir = "./plugin"
 			go command.Run()
