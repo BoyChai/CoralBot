@@ -1,0 +1,9 @@
+FROM alpine:latest
+
+RUN mkdir /app
+
+WORKDIR /app
+
+COPY ./CoralBot /app
+
+ENTRYPOINT ["./CoralBot"]
