@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/BoyChai/CoralBot/bot"
+	"github.com/BoyChai/CoralBot/structure"
 	"io"
 	"net/http"
 	"net/url"
@@ -15,15 +16,9 @@ type QQHandle struct {
 	Host      string
 	Agreement string
 }
-type QQMsg struct {
-	UserId     int64
-	GroupId    int64
-	Message    string
-	AutoEscape bool
-}
 
 // Reply 快速回复
-func (h QQHandle) Reply(e bot.QQEvent, m QQMsg) (map[string]interface{}, error) {
+func (h QQHandle) Reply(e bot.QQEvent, m structure.QQMsg) (map[string]interface{}, error) {
 	var data map[string]interface{}
 	var err error
 	switch e.MessageType {
@@ -41,7 +36,7 @@ func (h QQHandle) Reply(e bot.QQEvent, m QQMsg) (map[string]interface{}, error) 
 }
 
 // SendPrivateMsg 发送私聊消息
-func (h QQHandle) SendPrivateMsg(m QQMsg) (map[string]interface{}, error) {
+func (h QQHandle) SendPrivateMsg(m structure.QQMsg) (map[string]interface{}, error) {
 	var data map[string]interface{}
 	fromData := make(url.Values)
 	fromData.Add("user_id", strconv.FormatInt(m.UserId, 10))
@@ -72,7 +67,7 @@ func (h QQHandle) SendPrivateMsg(m QQMsg) (map[string]interface{}, error) {
 
 // SendGroupMsg 发送群聊消息
 // func (h QQHandle) SendGroupMsg(groupId int64, message string, autoEscape string) (map[string]interface{}, error) {
-func (h QQHandle) SendGroupMsg(m QQMsg) (map[string]interface{}, error) {
+func (h QQHandle) SendGroupMsg(m structure.QQMsg) (map[string]interface{}, error) {
 	var data map[string]interface{}
 
 	fromData := make(url.Values)
@@ -131,7 +126,7 @@ func (h QQHandle) SendGroupMsg(m QQMsg) (map[string]interface{}, error) {
 
 // SendMsg 发送消息
 // func (h QQHandle) SendMsg(userId int64, groupId int64, message string, autoEscape string) (map[string]interface{}, error) {
-func (h QQHandle) SendMsg(m QQMsg) (map[string]interface{}, error) {
+func (h QQHandle) SendMsg(m structure.QQMsg) (map[string]interface{}, error) {
 	var data map[string]interface{}
 	fromData := make(url.Values)
 	fromData.Add("user_id", strconv.FormatInt(m.UserId, 10))
@@ -711,17 +706,8 @@ func (h QQHandle) QiDianGetAccountInfo() (map[string]interface{}, error) {
 	return data, nil
 }
 
-// Profile 账号资料
-type Profile struct {
-	Nickname     string
-	Company      string
-	Email        string
-	College      string
-	PersonalNote string
-}
-
 // SetQQProfile 设置登录号资料
-func (h QQHandle) SetQQProfile(p Profile) (map[string]interface{}, error) {
+func (h QQHandle) SetQQProfile(p structure.Profile) (map[string]interface{}, error) {
 	var data map[string]interface{}
 	fromData := make(url.Values)
 	fromData.Add("nickname", p.Nickname)
