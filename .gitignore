@@ -1,0 +1,36 @@
+# Binaries and objects
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.o
+*.a
+*.out
+*.test
+*.coral
+
+# Log files
+*.log
+
+# Directory for compiled objects
+/bin/
+/pkg/
+
+# Dependency directories (remove the comment below if you are not using go modules)
+#/vendor/
+
+# Go build cache directory
+/.cache/
+
+# IDEs and editors
+/.idea/
+*.swp
+*.swo
+*~
+.vscode/
+*.vscode.json
+
+# OS files
+.DS_Store
+Thumbs.db
