@@ -3,13 +3,14 @@ package action
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/BoyChai/CoralBot/bot"
-	"github.com/BoyChai/CoralBot/structure"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/BoyChai/CoralBot/bot"
+	"github.com/BoyChai/CoralBot/structure"
 )
 
 type QQHandle struct {
@@ -128,12 +129,9 @@ func (h QQHandle) SendGroupMsg(m structure.QQMsg) (map[string]interface{}, error
 // func (h QQHandle) SendMsg(userId int64, groupId int64, message string, autoEscape string) (map[string]interface{}, error) {
 func (h QQHandle) SendMsg(m structure.QQMsg) (map[string]interface{}, error) {
 	var data map[string]interface{}
-	fromData := make(url.Values)
-	fromData.Add("user_id", strconv.FormatInt(m.UserId, 10))
-	fromData.Add("group_id", strconv.FormatInt(m.GroupId, 10))
-	fromData.Add("message", m.Message)
-	fromData.Add("auto_escape", fmt.Sprint(m.AutoEscape))
-	readerData := strings.NewReader(fromData.Encode())
+	messageData := fmt.Sprintf("user_id=%d&group_id=%d&message=%s&auto_escape=%v",
+		m.UserId, m.GroupId, m.Message, m.AutoEscape)
+	readerData := strings.NewReader(messageData)
 	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/send_msg")
 	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
 	if err != nil {
