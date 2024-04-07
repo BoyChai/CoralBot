@@ -1,13 +1,14 @@
 <p align="center">
   <a href="https://github.com/BoyChai/CoralBot">
-    <img src="icon/icon.png" width="200" height="200" alt="CoralBot">
+    <img src="https://boychai.github.io/CoralBot.Doc/icon.png" width="200" height="200" alt="CoralBot">
   </a>
 </p>
 
 # CoralBot
-前些月没空维护本项目，回来一看 go-cqhttp停止维护了  
+前些月没空维护本项目，回来一看 go-cqhttp停止维护了
 目前打算重构一下项目，任务处理逻辑有些乱，打算在处理逻辑这块重新写  
-然后就是维护一下文档，然后不出意外QQ相关的方法都会改成GOCQ了，后续找一下gocq的替代品，在做qq相关的维护，然后再把TG的开发库写出来  
+然后就是维护一下文档，然后再把TG的开发库写出来
+[CoralBot.Doc](https://boychai.github.io/CoralBot.Doc/)
 # 特别鸣谢
 
 

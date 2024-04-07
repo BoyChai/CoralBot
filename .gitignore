@@ -9,6 +9,7 @@
 *.out
 *.test
 *.coral
+*_test.go
 
 # Log files
 *.log
