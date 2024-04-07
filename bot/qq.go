@@ -88,7 +88,7 @@ type QQEvent struct {
 // https://12.onebot.dev/interface/message/segments/
 type Message struct {
 	Type string `json:"type"`
-	Data []struct {
+	Data struct {
 		ID        string `json:"id"`
 		Text      string `json:"text"`
 		UserID    string `json:"user_id"`
@@ -98,6 +98,7 @@ type Message struct {
 		Latitude  string `json:"latitude"`
 		Longitude string `json:"longitude"`
 		MessageID string `json:"message_id"`
+		URL       string `json:"url"`
 	} `json:"data"`
 }
 
@@ -159,7 +160,7 @@ func (e *QQEvent) getPostInfo() (postType string, postMsg string) {
 	case "notice":
 		return "通知", e.getNoticeInfo()
 	case "meta_event":
-		return "元事件", "go-cq心跳包"
+		return "元事件", "心跳包探测包"
 	default:
 		return fmt.Sprintf("未知的消息类型(%v)", e.PostType), ""
 	}
