@@ -2,11 +2,12 @@ package bot
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
 type QQEvent struct {
-	//https://docs.go-cqhttp.org/event/
+	// https://github.com/botuniverse/onebot-11/tree/master/event
 	PostType    string `json:"post_type"`
 	RequestType string `json:"request_type"`
 	MessageType string `json:"message_type"`
@@ -34,15 +35,15 @@ type QQEvent struct {
 		Name string `json:"name"`
 		Flag string `json:"flag"`
 	} `json:"anonymous"`
-	GroupID        int64  `json:"group_id"`
-	Message        string `json:"message"`
-	MessageSeq     int    `json:"message_seq"`
-	UserID         int64  `json:"user_id"`
-	GuildUserID    string `json:"guild_user_id"`
-	MessageID      int32  `json:"message_id"`
-	GuildMessageID string `json:"guild_message_id"`
-	NoticeType     string `json:"notice_type"`
-	MetaEventType  string `json:"meta_event_type"`
+	GroupID        int64     `json:"group_id"`
+	Message        []Message `json:"message"`
+	MessageSeq     int       `json:"message_seq"`
+	UserID         int64     `json:"user_id"`
+	GuildUserID    string    `json:"guild_user_id"`
+	MessageID      int32     `json:"message_id"`
+	GuildMessageID string    `json:"guild_message_id"`
+	NoticeType     string    `json:"notice_type"`
+	MetaEventType  string    `json:"meta_event_type"`
 	File           struct {
 		BusID int64  `json:"busid"`
 		ID    string `json:"id"`
@@ -80,6 +81,24 @@ type QQEvent struct {
 	NewInfo     ChannelInfo `json:"new_info"`
 	ChannelInfo ChannelInfo `json:"channel_info"`
 	Other       Other
+}
+
+// Message 消息字段
+// 兼容Lagrange、OpenShamrock和onebot12
+// https://12.onebot.dev/interface/message/segments/
+type Message struct {
+	Type string `json:"type"`
+	Data []struct {
+		ID        string `json:"id"`
+		Text      string `json:"text"`
+		UserID    string `json:"user_id"`
+		QQ        string `json:"qq"`
+		FileID    string `json:"file_id"`
+		File      string `json:"file"`
+		Latitude  string `json:"latitude"`
+		Longitude string `json:"longitude"`
+		MessageID string `json:"message_id"`
+	} `json:"data"`
 }
 
 // ChannelInfo 频道信息
@@ -151,7 +170,7 @@ func (e *QQEvent) getMsgInfo() (info string) {
 	case "private":
 		return fmt.Sprintf("收到%v(%v)的私信,私信内容为: %v", e.Sender.Nickname, e.Sender.UserID, e.Message)
 	case "group":
-		return fmt.Sprintf("收到来自%v群聊%v(%v)的消息,消息内容为: %v", e.GroupID, e.Sender.Nickname, e.Sender.UserID, e.Message)
+		return fmt.Sprintf("收到来自%v群聊%v(%v)的消息,消息内容为: %v", e.GroupID, e.Sender.Nickname, e.Sender.UserID, e.RawMessage)
 	}
 	return ""
 }
