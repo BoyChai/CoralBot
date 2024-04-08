@@ -1,7 +1,6 @@
 package log
 
 import (
-	"io"
 	"log"
 	"os"
 	"runtime"
@@ -11,11 +10,20 @@ import (
 )
 
 var (
+
+	// 前台Logger
 	debugLogger *log.Logger
 	infoLogger  *log.Logger
 	warnLogger  *log.Logger
 	errorLogger *log.Logger
 	fatalLogger *log.Logger
+
+	// 文件Logger
+	debugFileLogger *log.Logger
+	infoFileLogger  *log.Logger
+	warnFileLogger  *log.Logger
+	errorFileLogger *log.Logger
+	fatalFileLogger *log.Logger
 
 	logOut     *os.File
 	logLevel   int
@@ -32,8 +40,22 @@ const (
 	FatalLevel        // 4
 )
 
+const (
+	// 颜色重置
+	colorReset = "\033[0m"
+	// 红色
+	colorRed = "\033[31m"
+	// 黄色
+	colorYellow = "\033[33m"
+	// 青色
+	colorCyan = "\033[36m"
+	// 灰色
+	colorGray = "\033[90m"
+)
+
 func init() {
 	fileLock = sync.RWMutex{}
+	SetFile("logs/coralbot.log")
 }
 
 func SetLevel(level int) {
@@ -56,32 +78,36 @@ func SetFile(file string) {
 func Debug(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= DebugLevel {
-		debugLogger.Printf(getPrefix()+format, v...)
+		debugLogger.Printf(format, v...)
+		debugFileLogger.Printf(format, v...)
 	}
 }
 func Info(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= InfoLevel {
 		infoLogger.Printf(format, v...)
-		// infoLogger.Printf(getPrefix()+format, v...)
+		infoFileLogger.Printf(format, v...)
 	}
 }
 func Warn(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= WarnLevel {
 		warnLogger.Printf(format, v...)
+		warnFileLogger.Printf(format, v...)
 	}
 }
 func Error(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= ErrorLevel {
-		errorLogger.Printf(format, v...)
+		errorLogger.Printf(getPrefix()+format, v...)
+		errorFileLogger.Printf(getPrefix()+format, v...)
 	}
 }
 func Fatal(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= FatalLevel {
 		fatalLogger.Printf(getPrefix()+format, v...)
+		fatalFileLogger.Printf(getPrefix()+format, v...)
 	}
 }
 
@@ -120,9 +146,17 @@ func checkIfDayChange() {
 }
 
 func initLog(logOut *os.File) {
-	infoLogger = log.New(io.MultiWriter(logOut, os.Stdout), "[INFO] ", log.LstdFlags)
-	debugLogger = log.New(io.MultiWriter(logOut, os.Stdout), "[DEBUG]", log.LstdFlags)
-	warnLogger = log.New(io.MultiWriter(logOut, os.Stdout), "[WARN]", log.LstdFlags)
-	errorLogger = log.New(io.MultiWriter(logOut, os.Stdout), "[ERROR]", log.LstdFlags)
-	fatalLogger = log.New(io.MultiWriter(logOut, os.Stdout), "[FATAL]", log.LstdFlags)
+	// 前台Logger
+	infoLogger = log.New(os.Stdout, colorCyan+"[INFO] "+colorReset, log.LstdFlags)
+	debugLogger = log.New(os.Stdout, colorGray+"[DEBUG]"+colorReset, log.LstdFlags)
+	warnLogger = log.New(os.Stdout, colorYellow+"[WARN] "+colorReset, log.LstdFlags)
+	errorLogger = log.New(os.Stdout, colorRed+"[ERROR]"+colorReset, log.LstdFlags)
+	fatalLogger = log.New(os.Stdout, colorRed+"[FATAL]"+colorReset, log.LstdFlags)
+
+	// 文件Logger
+	infoFileLogger = log.New(logOut, "[INFO] ", log.LstdFlags)
+	debugFileLogger = log.New(logOut, "[DEBUG]", log.LstdFlags)
+	warnFileLogger = log.New(logOut, "[WARN] ", log.LstdFlags)
+	errorFileLogger = log.New(logOut, "[ERROR]", log.LstdFlags)
+	fatalFileLogger = log.New(logOut, "[FATAL]", log.LstdFlags)
 }
