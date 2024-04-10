@@ -3,6 +3,7 @@ package bot
 import (
 	"fmt"
 
+	"github.com/BoyChai/CoralBot/log"
 	"github.com/gin-gonic/gin"
 )
 
@@ -147,6 +148,11 @@ func (e *QQEvent) GetLogOut(params gin.LogFormatterParams) string {
 		postType,
 		postMsg)
 	return logout
+}
+func (e *QQEvent) printLog() {
+	postType, postMsg := e.getPostInfo()
+	logout := fmt.Sprintf("事件类型: %v 事件内容:\"%v\"", postType, postMsg)
+	log.Info(logout)
 }
 
 func (e *QQEvent) getPostInfo() (postType string, postMsg string) {

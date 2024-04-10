@@ -7,11 +7,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/BoyChai/CoralBot/config"
-	"github.com/BoyChai/CoralBot/task"
-	"github.com/tidwall/gjson"
 	"regexp"
 	"time"
+
+	"github.com/BoyChai/CoralBot/config"
+	"github.com/BoyChai/CoralBot/log"
+	"github.com/BoyChai/CoralBot/task"
+	"github.com/tidwall/gjson"
 )
 
 // Explain qq任务解析器
@@ -20,16 +22,20 @@ func (e *QQEvent) Explain(bodyData []byte) {
 	Tasks := task.Tasks
 	err := json.Unmarshal(bodyData, &e)
 	if err != nil {
-		fmt.Println("command parsing error,please feedback to the developer.error:", err)
+		log.Error("command parsing error,please feedback to the developer.error:", err)
 	}
+	e.printLog()
+	log.Debug("reporting information:%v,%v,%v", e.Time, e.SelfID, e.PostType)
 	for i := 0; i < len(Tasks); i++ {
 		t := Tasks[i]
 		if e.MessageType == "guild" {
+			log.Debug("assembling channel structures")
 			e.GuildUserID = gjson.Get(string(bodyData), "user_id").String()
 			e.GuildMessageID = gjson.Get(string(bodyData), "message_id").String()
 		}
 		status := filterStart(t)
 		if status == nil {
+			log.Debug("task match successful")
 			// 返回值如果等于空则代此事件已经达成了任务条件并已经执行
 			return
 		}
@@ -41,7 +47,7 @@ func (e *DingDingEvent) Explain(bodyData []byte) {
 	*e = DingDingEvent{}
 	err := json.Unmarshal(bodyData, &e)
 	if err != nil {
-		fmt.Println("command parsing error,please feedback to the developer.error:", err)
+		log.Error("command parsing error,please feedback to the developer.error:", err)
 	}
 	// 获取当前时间戳(毫秒)
 	now := time.Now()
@@ -59,7 +65,7 @@ func (e *DingDingEvent) Explain(bodyData []byte) {
 		result := hmac256.Sum(nil)
 		sign := base64.StdEncoding.EncodeToString(result)
 		if sign != config.Sign {
-			fmt.Println("[CoralBot]:机器人识别失败,或签名无效")
+			log.Error("机器人识别失败,或签名无效")
 			return
 		}
 	}
@@ -80,7 +86,7 @@ func filterStart(task task.Task) error {
 		conditionKey, _ := typeAsserts(task.Condition[t-1].Key)
 		// 如果这是此任务的最后一个判断
 		if t == len(task.Condition) {
-			if task.Condition[t-1].Regex == true {
+			if task.Condition[t-1].Regex {
 				// 正则判断
 				key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
 				if key {
@@ -93,9 +99,9 @@ func filterStart(task task.Task) error {
 				return nil
 			}
 		}
-		if task.Condition[t-1].Regex == true {
+		if task.Condition[t-1].Regex {
 			key, _ := regexp.MatchString(task.Condition[t-1].Value, fmt.Sprint(conditionKey))
-			if key != true {
+			if !key {
 				return errors.New("1")
 			}
 		}
