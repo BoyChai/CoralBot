@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/tidwall/gjson"
 	"io"
 	"net/http"
 	url2 "net/url"
+
+	"github.com/BoyChai/CoralBot/log"
+	"github.com/tidwall/gjson"
 )
 
 type DingDingHandle struct {
@@ -20,19 +22,17 @@ type DingDingHandle struct {
 
 //var AllHandle []*DingDingHandle
 
-// NewDingDingHandle 创建动作执行器
-//func NewDingDingHandle(appKey string, appSecret string) (*DingDingHandle, error) {
-//	var h DingDingHandle
-//	h.id = len(AllHandle)
-//	h.AppKey = appKey
-//	h.AppSecret = appSecret
-//	err := h.getAccessToken()
-//	if err != nil {
-//		return nil, err
-//	}
-//	AllHandle = append(AllHandle, &h)
-//	return &h, err
-//}
+// NewDingDingHandle 创建DingDing动作执行器
+func NewDingDingHandle(appKey string, appSecret string) (*DingDingHandle, error) {
+	var h DingDingHandle
+	h.AppKey = appKey
+	h.AppSecret = appSecret
+	err := h.getAccessToken()
+	if err != nil {
+		return nil, err
+	}
+	return &h, err
+}
 
 // GetID 获取当前命令执行器的id
 func (h *DingDingHandle) GetID() int {
@@ -87,7 +87,7 @@ func (h *DingDingHandle) reqPost(url string, msg *bytes.Reader) (statusCode int,
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err.Error())
 		}
 	}(resp.Body)
 	body, err := io.ReadAll(resp.Body)

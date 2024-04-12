@@ -54,6 +54,7 @@ func (e *DingDingEvent) Explain(bodyData []byte) {
 	nowTime := now.UnixNano() / 1e6
 	// 时间判断是否合法
 	if (config.Timestamp-nowTime)/3600000 >= 1 {
+		log.Warn("The message is illegal")
 		return
 	}
 	// 判断消息是否合法
@@ -75,6 +76,7 @@ func (e *DingDingEvent) Explain(bodyData []byte) {
 		t := Tasks[i]
 		status := filterStart(t)
 		if status == nil {
+			log.Debug("task match successful")
 			return
 		}
 	}
