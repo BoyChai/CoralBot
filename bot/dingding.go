@@ -2,8 +2,9 @@ package bot
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // DingDingEvent 整个事件信息
@@ -28,7 +29,15 @@ type DingDingEvent struct {
 	ConversationTitle         string `json:"conversationTitle"`
 	IsInAtList                bool   `json:"isInAtList"`
 	SessionWebhook            string `json:"sessionWebhook"`
-	Text                      struct {
+	Content                   struct {
+		RichText []struct {
+			Text                string `json:"text"`
+			PictureDownloadCode string `json:"pictureDownloadCode"`
+			DownloadCode        string `json:"downloadCode"`
+			Type                string `json:"type"`
+		} `json:"richText"`
+	} `json:"content"`
+	Text struct {
 		Content string `json:"content"`
 	} `json:"text"`
 	Msgtype string `json:"msgtype"`
