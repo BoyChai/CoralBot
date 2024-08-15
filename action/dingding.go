@@ -465,3 +465,36 @@ func (h *DingDingHandle) QueryGroupMessages(robotCode string, conversationId str
 func (h DingDingHandle) GetHandlerType() string {
 	return "DingDIng"
 }
+
+// DownloadInfo 文件下载地址
+type DownloadInfo struct {
+	URL string `json:"downloadUrl"`
+}
+
+func (h *DingDingHandle) GetMessageFilesUrl(robotCode string, downloadCode string) (url string, err error) {
+	// 数据拼接
+	body := make(map[string]interface{})
+	body["downloadCode"] = downloadCode
+	body["robotCode"] = robotCode
+
+	bytesData, err := json.Marshal(body)
+	if err != nil {
+		return "", err
+	}
+
+	reader := bytes.NewReader(bytesData)
+
+	_, bodyData, err := h.reqPost("https://api.dingtalk.com/v1.0/robot/messageFiles/download", reader)
+	if err != nil {
+		return "", err
+	}
+	var download DownloadInfo
+
+	// 解析 JSON 字符串
+	err = json.Unmarshal([]byte(bodyData), &download)
+	if err != nil {
+		return "", err
+	}
+	return download.URL, nil
+
+}
