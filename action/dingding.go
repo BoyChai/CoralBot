@@ -18,6 +18,7 @@ type DingDingHandle struct {
 	AppKey      string
 	AppSecret   string
 	accessToken string
+	Webhook     string
 }
 
 //var AllHandle []*DingDingHandle
@@ -32,6 +33,11 @@ func NewDingDingHandle(appKey string, appSecret string) (*DingDingHandle, error)
 		return nil, err
 	}
 	return &h, err
+}
+func NewDingDingHandleByWebHook(toekn string) *DingDingHandle {
+	var h DingDingHandle
+	h.Webhook = toekn
+	return &h
 }
 
 // GetID 获取当前命令执行器的id
@@ -497,4 +503,24 @@ func (h *DingDingHandle) GetMessageFilesUrl(robotCode string, downloadCode strin
 	}
 	return download.URL, nil
 
+}
+
+// SednGroupMessageByWebhook 通过 webhook 发送群消息
+func (h *DingDingHandle) SendGroupMessageByWebhook(msg string) (statusCode int, bodyData string, err error) {
+	resp, err := http.Post(h.Webhook, "application/json", bytes.NewBuffer([]byte(msg)))
+	if err != nil {
+		return 0, "", err
+	}
+	defer resp.Body.Close()
+
+	statusCode = resp.StatusCode
+
+	var buf bytes.Buffer
+	_, err = buf.ReadFrom(resp.Body)
+	if err != nil {
+		return statusCode, "", err
+	}
+	bodyData = buf.String()
+
+	return statusCode, bodyData, nil
 }
