@@ -3,14 +3,16 @@ package config
 import (
 	"fmt"
 	"os"
+
+	"github.com/go-ini/ini"
 )
-import "github.com/go-ini/ini"
 
 type ConfigStruct struct {
 	Listen            int
 	Plugin            bool
 	PluginInfo        bool
 	DingDingSignCheck bool
+	Log               bool
 }
 
 var Cfg ConfigStruct
@@ -44,6 +46,7 @@ func readConfig() error {
 	Cfg.PluginInfo = c.Section("").Key("plugin_info").MustBool(true)
 	Cfg.Listen = c.Section("").Key("listen").MustInt(8080)
 	Cfg.DingDingSignCheck = c.Section("").Key("dingding_sign_check").MustBool(true)
+	Cfg.Log = c.Section("").Key("log").MustBool(false)
 	return nil
 }
 

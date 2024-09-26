@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/BoyChai/CoralBot/config"
 )
 
 var (
@@ -55,7 +57,9 @@ const (
 
 func init() {
 	fileLock = sync.RWMutex{}
-	SetFile("logs/coralbot.log")
+	if config.Cfg.Log {
+		SetFile("logs/coralbot.log")
+	}
 }
 
 func SetLevel(level int) {
@@ -154,9 +158,12 @@ func initLog(logOut *os.File) {
 	fatalLogger = log.New(os.Stdout, colorRed+"[FATAL]"+colorReset, log.LstdFlags)
 
 	// 文件Logger
-	infoFileLogger = log.New(logOut, "[INFO] ", log.LstdFlags)
-	debugFileLogger = log.New(logOut, "[DEBUG]", log.LstdFlags)
-	warnFileLogger = log.New(logOut, "[WARN] ", log.LstdFlags)
-	errorFileLogger = log.New(logOut, "[ERROR]", log.LstdFlags)
-	fatalFileLogger = log.New(logOut, "[FATAL]", log.LstdFlags)
+	if config.Cfg.Log {
+		infoFileLogger = log.New(logOut, "[INFO] ", log.LstdFlags)
+		debugFileLogger = log.New(logOut, "[DEBUG]", log.LstdFlags)
+		warnFileLogger = log.New(logOut, "[WARN] ", log.LstdFlags)
+		errorFileLogger = log.New(logOut, "[ERROR]", log.LstdFlags)
+		fatalFileLogger = log.New(logOut, "[FATAL]", log.LstdFlags)
+	}
+
 }
