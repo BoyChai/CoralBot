@@ -1,6 +1,7 @@
 package action
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -129,14 +130,22 @@ func (h QQHandle) SendGroupMsg(m structure.QQMsg) (map[string]interface{}, error
 // func (h QQHandle) SendMsg(userId int64, groupId int64, message string, autoEscape string) (map[string]interface{}, error) {
 func (h QQHandle) SendMsg(m structure.QQMsg) (map[string]interface{}, error) {
 	var data map[string]interface{}
-	messageData := fmt.Sprintf("user_id=%d&group_id=%d&message=%s&auto_escape=%v",
-		m.UserId, m.GroupId, m.Message, m.AutoEscape)
-	readerData := strings.NewReader(messageData)
-	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/send_msg")
-	request, err := http.Post(addr, "application/x-www-form-urlencoded", readerData)
+	messageData := map[string]interface{}{
+		"message_type": "private",
+		"user_id":      m.UserId,
+		"message":      m.Message,
+	}
+	jsonData, err := json.Marshal(messageData)
 	if err != nil {
 		return data, err
 	}
+
+	addr := fmt.Sprintf(h.Agreement + "://" + h.Host + "/send_msg")
+	request, err := http.Post(addr, "application/json", bytes.NewReader(jsonData))
+	if err != nil {
+		return data, err
+	}
+
 	body, err := io.ReadAll(request.Body)
 	if err != nil {
 		return data, err
@@ -147,10 +156,12 @@ func (h QQHandle) SendMsg(m structure.QQMsg) (map[string]interface{}, error) {
 			fmt.Println(err)
 		}
 	}(request.Body)
+
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		return data, err
 	}
+
 	return data, nil
 }
 

@@ -83,35 +83,45 @@ func Debug(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= DebugLevel {
 		debugLogger.Printf(format, v...)
-		debugFileLogger.Printf(format, v...)
+		if config.Cfg.Log {
+			debugFileLogger.Printf(format, v...)
+		}
 	}
 }
 func Info(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= InfoLevel {
 		infoLogger.Printf(format, v...)
-		infoFileLogger.Printf(format, v...)
+		if config.Cfg.Log {
+			infoFileLogger.Printf(format, v...)
+		}
 	}
 }
 func Warn(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= WarnLevel {
 		warnLogger.Printf(format, v...)
-		warnFileLogger.Printf(format, v...)
+		if config.Cfg.Log {
+			warnFileLogger.Printf(format, v...)
+		}
 	}
 }
 func Error(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= ErrorLevel {
 		errorLogger.Printf(getPrefix()+format, v...)
-		errorFileLogger.Printf(getPrefix()+format, v...)
+		if config.Cfg.Log {
+			errorFileLogger.Printf(getPrefix()+format, v...)
+		}
 	}
 }
 func Fatal(format string, v ...any) {
 	checkIfDayChange()
 	if logLevel <= FatalLevel {
 		fatalLogger.Printf(getPrefix()+format, v...)
-		fatalFileLogger.Printf(getPrefix()+format, v...)
+		if config.Cfg.Log {
+			fatalFileLogger.Printf(getPrefix()+format, v...)
+		}
 	}
 }
 
