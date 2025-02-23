@@ -1,179 +1,202 @@
 package log
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 
 	"github.com/BoyChai/CoralBot/config"
 )
 
+// Logger 定义日志级别常量和颜色常量
+type Logger struct {
+	level         int
+	file          *os.File
+	filePath      string
+	currentDay    int
+	mu            sync.RWMutex
+	buffered      *bufio.Writer
+	loggers       map[int]*log.Logger // 前台日志
+	fileLoggers   map[int]*log.Logger // 文件日志
+	colorPrefixes map[int]string      // 颜色前缀
+	plainPrefixes map[int]string      // 纯文本前缀
+}
+
+const (
+	DebugLevel = iota
+	InfoLevel
+	WarnLevel
+	ErrorLevel
+	FatalLevel
+)
+
 var (
-
-	// 前台Logger
-	debugLogger *log.Logger
-	infoLogger  *log.Logger
-	warnLogger  *log.Logger
-	errorLogger *log.Logger
-	fatalLogger *log.Logger
-
-	// 文件Logger
-	debugFileLogger *log.Logger
-	infoFileLogger  *log.Logger
-	warnFileLogger  *log.Logger
-	errorFileLogger *log.Logger
-	fatalFileLogger *log.Logger
-
-	logOut     *os.File
-	logLevel   int
-	currentDay int
-	logFile    string
-	fileLock   sync.RWMutex
-)
-
-const (
-	DebugLevel = iota // 0
-	InfoLevel         // 1
-	WarnLevel         // 2
-	ErrorLevel        // 3
-	FatalLevel        // 4
-)
-
-const (
-	// 颜色重置
+	logger     *Logger
+	once       sync.Once
 	colorReset = "\033[0m"
-	// 红色
-	colorRed = "\033[31m"
-	// 黄色
-	colorYellow = "\033[33m"
-	// 青色
-	colorCyan = "\033[36m"
-	// 灰色
-	colorGray = "\033[90m"
+	levels     = map[int]string{
+		DebugLevel: "DEBUG",
+		InfoLevel:  "INFO",
+		WarnLevel:  "WARN",
+		ErrorLevel: "ERROR",
+		FatalLevel: "FATAL",
+	}
+	colors = map[int]string{
+		DebugLevel: "\033[90m", // 灰色
+		InfoLevel:  "\033[36m", // 青色
+		WarnLevel:  "\033[33m", // 黄色
+		ErrorLevel: "\033[31m", // 红色
+		FatalLevel: "\033[31m", // 红色
+	}
 )
 
-func init() {
-	fileLock = sync.RWMutex{}
-	if config.Cfg.Log {
-		SetFile("logs/coralbot.log")
+// GetLogger 获取单例Logger
+func GetLogger() *Logger {
+	once.Do(func() {
+		logger = newLogger()
+	})
+	return logger
+}
+
+func newLogger() *Logger {
+	l := &Logger{
+		level:         InfoLevel,
+		loggers:       make(map[int]*log.Logger),
+		fileLoggers:   make(map[int]*log.Logger),
+		colorPrefixes: make(map[int]string),
+		plainPrefixes: make(map[int]string),
+	}
+
+	// 初始化前缀
+	for lvl, name := range levels {
+		l.colorPrefixes[lvl] = fmt.Sprintf("%s[%s]%s ", colors[lvl], name, colorReset)
+		l.plainPrefixes[lvl] = fmt.Sprintf("[%s] ", name)
+		l.loggers[lvl] = log.New(os.Stdout, l.colorPrefixes[lvl], log.LstdFlags)
+	}
+
+	return l
+}
+
+// SetLevel 设置日志级别
+func (l *Logger) SetLevel(level int) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	if level >= DebugLevel && level <= FatalLevel {
+		l.level = level
 	}
 }
 
-func SetLevel(level int) {
-	logLevel = level
-}
+// SetFile 设置日志文件
+func (l *Logger) SetFile(filePath string) error {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 
-func SetFile(file string) {
-	var err error
-	logOut, err = os.OpenFile(file, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0664)
+	if err := l.closeFile(); err != nil {
+		return err
+	}
+
+	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0664)
 	if err != nil {
-		panic(err)
-	} else {
-		// 获取今天是当年的第几天
-		currentDay = time.Now().YearDay()
-		initLog(logOut)
-		logFile = file
+		return err
 	}
+
+	l.file = file
+	l.filePath = filePath
+	l.currentDay = time.Now().YearDay()
+	l.buffered = bufio.NewWriter(file)
+
+	// 初始化文件logger
+	for lvl := range levels {
+		l.fileLoggers[lvl] = log.New(l.buffered, l.plainPrefixes[lvl], log.LstdFlags)
+	}
+
+	return nil
 }
 
-func Debug(format string, v ...any) {
-	checkIfDayChange()
-	if logLevel <= DebugLevel {
-		debugLogger.Printf(format, v...)
-		if config.Cfg.Log {
-			debugFileLogger.Printf(format, v...)
-		}
-	}
-}
-func Info(format string, v ...any) {
-	checkIfDayChange()
-	if logLevel <= InfoLevel {
-		infoLogger.Printf(format, v...)
-		if config.Cfg.Log {
-			infoFileLogger.Printf(format, v...)
-		}
-	}
-}
-func Warn(format string, v ...any) {
-	checkIfDayChange()
-	if logLevel <= WarnLevel {
-		warnLogger.Printf(format, v...)
-		if config.Cfg.Log {
-			warnFileLogger.Printf(format, v...)
-		}
-	}
-}
-func Error(format string, v ...any) {
-	checkIfDayChange()
-	if logLevel <= ErrorLevel {
-		errorLogger.Printf(getPrefix()+format, v...)
-		if config.Cfg.Log {
-			errorFileLogger.Printf(getPrefix()+format, v...)
-		}
-	}
-}
-func Fatal(format string, v ...any) {
-	checkIfDayChange()
-	if logLevel <= FatalLevel {
-		fatalLogger.Printf(getPrefix()+format, v...)
-		if config.Cfg.Log {
-			fatalFileLogger.Printf(getPrefix()+format, v...)
-		}
-	}
-}
-
-func getCallTrace() (string, int) {
-	// 函数名 文件 行号 是否出现异常
-	//pc, file, line, ok := runtime.Caller(0)
-
-	_, file, line, ok := runtime.Caller(3)
-	if ok {
-		return file, line
-	}
-	return "", 0
-}
-
-func getPrefix() string {
-	file, line := getCallTrace()
-
-	return file + ":" + strconv.Itoa(line) + " "
-}
-
-func checkIfDayChange() {
-	// 锁
-	fileLock.Lock()
-	defer fileLock.Unlock()
-	day := time.Now().YearDay()
-	if day == currentDay {
+// 日志输出方法
+func (l *Logger) log(level int, format string, v ...interface{}) {
+	if level < l.level {
 		return
-	} else {
-		currentDay = day
-		logOut.Close()
-		postFix := time.Now().Add(-24 * time.Hour).Format("20060102")
-		os.Rename(logFile, logFile+"."+postFix)
-		logOut, _ = os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0664)
-		initLog(logOut)
+	}
+
+	l.checkDayChange()
+
+	// 前台输出
+	l.loggers[level].Printf(format, v...)
+
+	// 文件输出
+	if config.Cfg.Log && l.file != nil {
+		prefix := l.getCallerPrefix()
+		l.fileLoggers[level].Printf(prefix+format, v...)
+		l.buffered.Flush()
 	}
 }
 
-func initLog(logOut *os.File) {
-	// 前台Logger
-	infoLogger = log.New(os.Stdout, colorCyan+"[INFO] "+colorReset, log.LstdFlags)
-	debugLogger = log.New(os.Stdout, colorGray+"[DEBUG]"+colorReset, log.LstdFlags)
-	warnLogger = log.New(os.Stdout, colorYellow+"[WARN] "+colorReset, log.LstdFlags)
-	errorLogger = log.New(os.Stdout, colorRed+"[ERROR]"+colorReset, log.LstdFlags)
-	fatalLogger = log.New(os.Stdout, colorRed+"[FATAL]"+colorReset, log.LstdFlags)
+func (l *Logger) Debug(format string, v ...interface{}) { l.log(DebugLevel, format, v...) }
+func (l *Logger) Info(format string, v ...interface{})  { l.log(InfoLevel, format, v...) }
+func (l *Logger) Warn(format string, v ...interface{})  { l.log(WarnLevel, format, v...) }
+func (l *Logger) Error(format string, v ...interface{}) { l.log(ErrorLevel, format, v...) }
+func (l *Logger) Fatal(format string, v ...interface{}) { l.log(FatalLevel, format, v...) }
 
-	// 文件Logger
-	if config.Cfg.Log {
-		infoFileLogger = log.New(logOut, "[INFO] ", log.LstdFlags)
-		debugFileLogger = log.New(logOut, "[DEBUG]", log.LstdFlags)
-		warnFileLogger = log.New(logOut, "[WARN] ", log.LstdFlags)
-		errorFileLogger = log.New(logOut, "[ERROR]", log.LstdFlags)
-		fatalFileLogger = log.New(logOut, "[FATAL]", log.LstdFlags)
+// 获取调用者信息
+func (l *Logger) getCallerPrefix() string {
+	_, file, line, ok := runtime.Caller(3)
+	if !ok {
+		return ""
+	}
+	return fmt.Sprintf("%s:%d ", file, line)
+}
+
+// 检查日期变化并处理日志文件轮转
+func (l *Logger) checkDayChange() {
+	l.mu.RLock()
+	day := time.Now().YearDay()
+	if l.file == nil || day == l.currentDay {
+		l.mu.RUnlock()
+		return
+	}
+	l.mu.RUnlock()
+
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	// 再次检查防止并发修改
+	if day == l.currentDay {
+		return
 	}
 
+	l.currentDay = day
+	l.closeFile()
+
+	// 重命名旧文件
+	postFix := time.Now().Add(-24 * time.Hour).Format("20060102")
+	os.Rename(l.filePath, l.filePath+"."+postFix)
+
+	// 创建新文件
+	l.SetFile(l.filePath)
+}
+
+// 关闭文件
+func (l *Logger) closeFile() error {
+	if l.file != nil {
+		l.buffered.Flush()
+		err := l.file.Close()
+		l.file = nil
+		return err
+	}
+	return nil
+}
+
+// Init 初始化日志
+func Init() {
+	l := GetLogger()
+	if config.Cfg.Log {
+		if err := l.SetFile("logs/coralbot.log"); err != nil {
+			l.Error("Failed to initialize log file: %v", err)
+		}
+	}
 }
