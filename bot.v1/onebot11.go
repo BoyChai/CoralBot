@@ -35,6 +35,9 @@ type Onebot11Event struct {
 	Time time.Time `json:"time"`
 	// 机器人自身ID
 	SelfID int64 `json:"self_id"`
+	Status struct {
+		IsBroadcast bool `json:"is_broadcast"`
+	}
 }
 
 func (e Onebot11Event) GetType() string {
@@ -42,6 +45,12 @@ func (e Onebot11Event) GetType() string {
 }
 
 func (e *Onebot11Event) Parse(jsonStr string) {
+	if gjson.Get(jsonStr, "meta_event").String() == "meta_event" {
+		// 非消息事件
+		e.Status.IsBroadcast = false
+		return
+	}
+	e.Status.IsBroadcast = true
 
 	// 解析基本字段
 	e.MessageType = gjson.Get(jsonStr, "message_type").String()
@@ -66,6 +75,9 @@ func (e *Onebot11Event) Parse(jsonStr string) {
 }
 
 func (e Onebot11Event) Broadcast() error {
+	if !e.Status.IsBroadcast {
+		return nil
+	}
 	for _, task := range Tasks {
 		err := task(&e)
 		if err != nil {
