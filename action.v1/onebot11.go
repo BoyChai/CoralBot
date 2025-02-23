@@ -38,6 +38,7 @@ func (action Onebot11Action) SendMsg(msgType string, m structure.QQMsg) (map[str
 	messageData := map[string]interface{}{
 		"message_type": msgType,
 		"user_id":      m.UserId,
+		"group_id":     m.GroupId,
 		"message":      m.Message,
 	}
 	jsonData, err := json.Marshal(messageData)
