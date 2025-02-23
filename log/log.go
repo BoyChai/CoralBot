@@ -36,7 +36,6 @@ const (
 
 var (
 	logger     *Logger
-	once       sync.Once
 	colorReset = "\033[0m"
 	levels     = map[int]string{
 		DebugLevel: "DEBUG",
@@ -54,16 +53,8 @@ var (
 	}
 )
 
-// GetLogger 获取单例Logger
-func GetLogger() *Logger {
-	once.Do(func() {
-		logger = newLogger()
-	})
-	return logger
-}
-
-func newLogger() *Logger {
-	l := &Logger{
+func init() {
+	logger = &Logger{
 		level:         InfoLevel,
 		loggers:       make(map[int]*log.Logger),
 		fileLoggers:   make(map[int]*log.Logger),
@@ -71,31 +62,29 @@ func newLogger() *Logger {
 		plainPrefixes: make(map[int]string),
 	}
 
-	// 初始化前缀
+	// 初始化前缀和前台 logger
 	for lvl, name := range levels {
-		l.colorPrefixes[lvl] = fmt.Sprintf("%s[%s]%s ", colors[lvl], name, colorReset)
-		l.plainPrefixes[lvl] = fmt.Sprintf("[%s] ", name)
-		l.loggers[lvl] = log.New(os.Stdout, l.colorPrefixes[lvl], log.LstdFlags)
+		logger.colorPrefixes[lvl] = fmt.Sprintf("%s[%s]%s ", colors[lvl], name, colorReset)
+		logger.plainPrefixes[lvl] = fmt.Sprintf("[%s] ", name)
+		logger.loggers[lvl] = log.New(os.Stdout, logger.colorPrefixes[lvl], log.LstdFlags)
 	}
-
-	return l
 }
 
 // SetLevel 设置日志级别
-func (l *Logger) SetLevel(level int) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+func SetLevel(level int) {
+	logger.mu.Lock()
+	defer logger.mu.Unlock()
 	if level >= DebugLevel && level <= FatalLevel {
-		l.level = level
+		logger.level = level
 	}
 }
 
 // SetFile 设置日志文件
-func (l *Logger) SetFile(filePath string) error {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+func SetFile(filePath string) error {
+	logger.mu.Lock()
+	defer logger.mu.Unlock()
 
-	if err := l.closeFile(); err != nil {
+	if err := logger.closeFile(); err != nil {
 		return err
 	}
 
@@ -104,20 +93,20 @@ func (l *Logger) SetFile(filePath string) error {
 		return err
 	}
 
-	l.file = file
-	l.filePath = filePath
-	l.currentDay = time.Now().YearDay()
-	l.buffered = bufio.NewWriter(file)
+	logger.file = file
+	logger.filePath = filePath
+	logger.currentDay = time.Now().YearDay()
+	logger.buffered = bufio.NewWriter(file)
 
-	// 初始化文件logger
+	// 初始化文件 logger
 	for lvl := range levels {
-		l.fileLoggers[lvl] = log.New(l.buffered, l.plainPrefixes[lvl], log.LstdFlags)
+		logger.fileLoggers[lvl] = log.New(logger.buffered, logger.plainPrefixes[lvl], log.LstdFlags)
 	}
 
 	return nil
 }
 
-// 日志输出方法
+// log 核心日志输出方法
 func (l *Logger) log(level int, format string, v ...interface{}) {
 	if level < l.level {
 		return
@@ -136,11 +125,12 @@ func (l *Logger) log(level int, format string, v ...interface{}) {
 	}
 }
 
-func (l *Logger) Debug(format string, v ...interface{}) { l.log(DebugLevel, format, v...) }
-func (l *Logger) Info(format string, v ...interface{})  { l.log(InfoLevel, format, v...) }
-func (l *Logger) Warn(format string, v ...interface{})  { l.log(WarnLevel, format, v...) }
-func (l *Logger) Error(format string, v ...interface{}) { l.log(ErrorLevel, format, v...) }
-func (l *Logger) Fatal(format string, v ...interface{}) { l.log(FatalLevel, format, v...) }
+// 包级日志函数
+func Debug(format string, v ...interface{}) { logger.log(DebugLevel, format, v...) }
+func Info(format string, v ...interface{})  { logger.log(InfoLevel, format, v...) }
+func Warn(format string, v ...interface{})  { logger.log(WarnLevel, format, v...) }
+func Error(format string, v ...interface{}) { logger.log(ErrorLevel, format, v...) }
+func Fatal(format string, v ...interface{}) { logger.log(FatalLevel, format, v...) }
 
 // 获取调用者信息
 func (l *Logger) getCallerPrefix() string {
@@ -177,7 +167,7 @@ func (l *Logger) checkDayChange() {
 	os.Rename(l.filePath, l.filePath+"."+postFix)
 
 	// 创建新文件
-	l.SetFile(l.filePath)
+	SetFile(l.filePath)
 }
 
 // 关闭文件
@@ -193,10 +183,9 @@ func (l *Logger) closeFile() error {
 
 // Init 初始化日志
 func Init() {
-	l := GetLogger()
 	if config.Cfg.Log {
-		if err := l.SetFile("logs/coralbot.log"); err != nil {
-			l.Error("Failed to initialize log file: %v", err)
+		if err := SetFile("logs/coralbot.log"); err != nil {
+			Error("Failed to initialize log file: %v", err)
 		}
 	}
 }
