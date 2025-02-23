@@ -3,6 +3,7 @@ package botv1
 import (
 	"time"
 
+	"github.com/BoyChai/CoralBot/log"
 	"github.com/tidwall/gjson"
 )
 
@@ -45,7 +46,7 @@ func (e Onebot11Event) GetType() string {
 }
 
 func (e *Onebot11Event) Parse(jsonStr string) {
-	if gjson.Get(jsonStr, "meta_event").String() == "meta_event" {
+	if gjson.Get(jsonStr, "post_type").String() == "meta_event" {
 		// 非消息事件
 		e.Status.IsBroadcast = false
 		return
@@ -72,8 +73,12 @@ func (e *Onebot11Event) Parse(jsonStr string) {
 	e.Sender.Level = int(gjson.Get(jsonStr, "sender.level").Int()) // JSON 中是字符串，需转换
 	e.Sender.Role = gjson.Get(jsonStr, "sender.role").String()
 	e.Sender.Title = gjson.Get(jsonStr, "sender.title").String()
+
+	// 消息打印
+	e.printLog()
 }
 
+// 广播事件
 func (e Onebot11Event) Broadcast() error {
 	if !e.Status.IsBroadcast {
 		return nil
@@ -85,4 +90,16 @@ func (e Onebot11Event) Broadcast() error {
 		}
 	}
 	return nil
+}
+
+// 信息播报
+func (e Onebot11Event) printLog() {
+	switch e.MessageType {
+	case "private":
+		log.Info("收到 %v(%v)的私信,私信内容为: %v", e.Sender.Nickname, e.Sender.UserID, e.Message)
+	case "group":
+		log.Info("收到来自%v群聊%v(%v)的消息,消息内容为: %v", e.GroupID, e.Sender.Nickname, e.Sender.UserID, e.Message)
+	default:
+		log.Info("消息未解析,内容为%v", e)
+	}
 }
